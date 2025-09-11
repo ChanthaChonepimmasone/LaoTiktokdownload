@@ -297,6 +297,17 @@
             100% { transform: rotate(360deg); }
         }
         
+        .error-message {
+            display: none;
+            color: #d9534f;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
         @media (max-width: 768px) {
             .step {
                 flex-basis: 100%;
@@ -336,6 +347,8 @@
                 <input type="text" id="tiktok-url" placeholder="วางลิงก์วิดีโอ TikTok ที่นี่..." />
                 <button id="download-btn"><i class="fas fa-download"></i> ดาวน์โหลด</button>
             </div>
+            
+            <div class="error-message" id="error-message"></div>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
@@ -443,6 +456,14 @@
     </div>
 
     <script>
+        // เก็บ API key และข้อมูลการเชื่อมต่อ
+        const API_KEY = 'e1fe9f5e84mshc2af2c71e5afe63p157397jsnc717460c6b6c';
+        const API_HOST = 'tiktok-video-no-watermark2.p.rapidapi.com';
+        const API_URL = 'https://tiktok-video-no-watermark2.p.rapidapi.com/';
+        
+        // ตัวแปรเก็บข้อมูลวิดีโอ
+        let videoData = null;
+        
         // FAQ Toggle
         document.querySelectorAll('.faq-question').forEach(question => {
             question.addEventListener('click', () => {
@@ -461,19 +482,78 @@
             });
         });
         
+        // ฟังก์ชันแสดงข้อผิดพลาด
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            // ซ่อนข้อความ error หลังจาก 5 วินาที
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+        
+        // ฟังก์ชันดาวน์โหลดไฟล์
+        function downloadFile(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        
+        // ฟังก์ชันแปลงวิดีโอเป็น MP3 (ใช้บริการภายนอก)
+        async function convertToMp3(videoUrl, filename) {
+            try {
+                // ในที่นี้เราจะใช้บริการแปลงวิดีโอเป็น MP3 ออนไลน์
+                // เนื่องจากเบราว์เซอร์ไม่สามารถแปลงไฟล์ได้โดยตรง
+                // เราจะใช้ video2mp3 service ผ่าน CORS proxy
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const convertUrl = `https://video2mp3.herokuapp.com/api/convert`;
+                
+                const response = await fetch(proxyUrl + convertUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: videoUrl })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('การแปลงไฟล์เป็น MP3 ล้มเหลว');
+                }
+                
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                return data.url;
+            } catch (error) {
+                console.error('Error converting to MP3:', error);
+                throw new Error('ไม่สามารถแปลงไฟล์เป็น MP3 ได้: ' + error.message);
+            }
+        }
+        
         // Download Button Handler
-        document.getElementById('download-btn').addEventListener('click', function() {
-            const url = document.getElementById('tiktok-url').value;
+        document.getElementById('download-btn').addEventListener('click', async function() {
+            const url = document.getElementById('tiktok-url').value.trim();
             const loading = document.getElementById('loading');
             const resultContainer = document.getElementById('result-container');
+            const errorElement = document.getElementById('error-message');
+            
+            // ซ่อนข้อความ error ที่อาจแสดงอยู่
+            errorElement.style.display = 'none';
             
             if (!url) {
-                alert('กรุณาใส่ลิงก์วิดีโอ TikTok');
+                showError('กรุณาใส่ลิงก์วิดีโอ TikTok');
                 return;
             }
             
             if (!url.includes('tiktok.com')) {
-                alert('กรุณาใส่ลิงก์ TikTok ที่ถูกต้อง');
+                showError('กรุณาใส่ลิงก์ TikTok ที่ถูกต้อง');
                 return;
             }
             
@@ -481,27 +561,71 @@
             loading.style.display = 'block';
             resultContainer.style.display = 'none';
             
-            // ในเว็บจริงๆ ตรงนี้จะมีการเรียก API เพื่อดึงข้อมูลวิดีโอ
-            // แต่สำหรับตัวอย่างนี้เราจะแสดงผลลัพธ์ตัวอย่างหลังจากหน่วงเวลา
-            setTimeout(() => {
-                loading.style.display = 'none';
-                resultContainer.style.display = 'block';
+            try {
+                // เรียก API เพื่อดึงข้อมูลวิดีโอ
+                const response = await fetch(`${API_URL}?url=${encodeURIComponent(url)}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-RapidAPI-Key': API_KEY,
+                        'X-RapidAPI-Host': API_HOST
+                    }
+                });
                 
-                // ตั้งค่า video preview (ตัวอย่าง)
-                document.getElementById('video-preview').innerHTML = `
-                    <source src="#" type="video/mp4">
+                if (!response.ok) {
+                    throw new Error('ไม่สามารถดึงข้อมูลวิดีโอได้');
+                }
+                
+                const data = await response.json();
+                
+                if (data.code !== 0) {
+                    throw new Error(data.msg || 'เกิดข้อผิดพลาดในการประมวลผลวิดีโอ');
+                }
+                
+                // เก็บข้อมูลวิดีโอ
+                videoData = data.data;
+                
+                // แสดงผลวิดีโอ
+                const videoPreview = document.getElementById('video-preview');
+                videoPreview.innerHTML = `
+                    <source src="${videoData.play}" type="video/mp4">
                     เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
                 `;
+                videoPreview.load();
                 
                 // ตั้งค่า download buttons
                 document.getElementById('download-mp4').onclick = function() {
-                    alert('ในเว็บจริง จะเริ่มดาวน์โหลดไฟล์ MP4');
+                    downloadFile(videoData.play, 'tiktok-video.mp4');
                 };
                 
-                document.getElementById('download-mp3').onclick = function() {
-                    alert('ในเว็บจริง จะเริ่มดาวน์โหลดไฟล์ MP3');
+                document.getElementById('download-mp3').onclick = async function() {
+                    const mp3Button = this;
+                    const originalText = mp3Button.innerHTML;
+                    
+                    // แสดงสถานะกำลังโหลด
+                    mp3Button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังแปลงไฟล์...';
+                    mp3Button.disabled = true;
+                    
+                    try {
+                        const mp3Url = await convertToMp3(videoData.play, 'tiktok-audio.mp3');
+                        downloadFile(mp3Url, 'tiktok-audio.mp3');
+                    } catch (error) {
+                        showError(error.message);
+                    } finally {
+                        // คืนค่าสถานะปุ่มเดิม
+                        mp3Button.innerHTML = originalText;
+                        mp3Button.disabled = false;
+                    }
                 };
-            }, 2000);
+                
+                // แสดงผลลัพธ์
+                loading.style.display = 'none';
+                resultContainer.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                loading.style.display = 'none';
+                showError(error.message || 'เกิดข้อผิดพลาดในการดึงข้อมูลวิดีโอ');
+            }
         });
     </script>
 </body>
