@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Video Downloader | ดาวน์โหลดวิดีโอ TikTok</title>
+    <style>
+        :root {
+            --primary-color: #ff0050;
+            --secondary-color: #00f2ea;
+            --dark-color: #121212;
+            --light-color: #f8f9fa;
+            --gray-color: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .download-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .input-group input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .input-group button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .input-group button:hover {
+            background-color: #e00046;
+        }
+        
+        .how-to-use {
+            margin-bottom: 40px;
+        }
+        
+        .how-to-use h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            flex-basis: 30%;
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .step:hover {
+            transform: translateY(-5px);
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-weight: bold;
+        }
+        
+        .features {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .features h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            transition: transform 0.3s;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .faq {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .faq h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .faq-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .faq-question {
+            font-weight: bold;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            color: var(--gray-color);
+            display: none;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #666;
+            margin-top: 50px;
+            border-top: 1px solid #eee;
+        }
+        
+        .result-container {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .video-preview {
+            max-width: 300px;
+            margin: 0 auto 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .video-preview video {
+            width: 100%;
+            display: block;
+        }
+        
+        .download-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .download-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .download-btn:hover {
+            background-color: #e00046;
+        }
+        
+        .download-btn.mp3 {
+            background-color: #25d366;
+        }
+        
+        .download-btn.mp3:hover {
+            background-color: #20bd5c;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .step {
+                flex-basis: 100%;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .input-group input {
+                border-radius: 5px;
+                margin-bottom: 10px;
+            }
+            
+            .input-group button {
+                border-radius: 5px;
+            }
+            
+            .download-options {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TikTok Video Downloader</h1>
+            <p>ดาวน์โหลดวิดีโอ TikTok ฟรี โดยไม่ต้องลงทะเบียน - บริการที่รวดเร็วและใช้งานง่าย</p>
+        </header>
+        
+        <section class="download-section">
+            <h2 style="text-align: center; margin-bottom: 20px;">ดาวน์โหลดวิดีโอ TikTok</h2>
+            <div class="input-group">
+                <input type="text" id="tiktok-url" placeholder="วางลิงก์วิดีโอ TikTok ที่นี่..." />
+                <button id="download-btn"><i class="fas fa-download"></i> ดาวน์โหลด</button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>กำลังประมวลผลวิดีโอของคุณ...</p>
+            </div>
+            
+            <div class="result-container" id="result-container">
+                <h3>วิดีโอของคุณพร้อมแล้ว!</h3>
+                <div class="video-preview">
+                    <video id="video-preview" controls></video>
+                </div>
+                <div class="download-options">
+                    <button class="download-btn" id="download-mp4">
+                        <i class="fas fa-video"></i> ดาวน์โหลด MP4
+                    </button>
+                    <button class="download-btn mp3" id="download-mp3">
+                        <i class="fas fa-music"></i> ดาวน์โหลด MP3
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <section class="how-to-use">
+            <h2>วิธีการใช้งาน</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>คัดลอกลิงก์</h3>
+                    <p>คัดลอกลิงก์วิดีโอ TikTok จากแอป</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>วางลิงก์</h3>
+                    <p>วางลิงก์ในช่องด้านบน</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>ดาวน์โหลด</h3>
+                    <p>กดปุ่มดาวน์โหลดและเลือกรูปแบบ</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="features">
+            <h2>ทำไมต้องใช้บริการของเรา?</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>รวดเร็ว</h3>
+                    <p>ดาวน์โหลดวิดีโอได้อย่างรวดเร็ว</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>ปลอดภัย</h3>
+                    <p>ไม่ต้องลงทะเบียนหรือติดตั้งซอฟต์แวร์</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h3>รองรับทุกอุปกรณ์</h3>
+                    <p>ใช้งานได้ทั้งบนมือถือและคอมพิวเตอร์</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <h3>ฟรี</h3>
+                    <p>บริการฟรี 100% ไม่มีค่าใช้จ่าย</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="faq">
+            <h2>คำถามที่พบบ่อย</h2>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>บริการนี้ฟรีจริงหรือ?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>ใช่! บริการของเราให้ใช้ฟรี 100% โดยไม่มีค่าใช้จ่ายใดๆ ทั้งสิ้น</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>ต้องติดตั้งแอปหรือไม่?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>ไม่จำเป็นต้องติดตั้งแอปใดๆ ทั้งสิ้น ใช้งานผ่านเบราว์เซอร์ได้เลย</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>ดาวน์โหลดวิดีโอได้กี่ครั้ง?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>ไม่จำกัดจำนวนครั้ง ท่านสามารถดาวน์โหลดได้ไม่จำกัด</p>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>© 2023 TikTok Video Downloader. บริการนี้ใช้เพื่อการศึกษาทางการเท่านั้น</p>
+            <p>Disclaimer: This service is not affiliated with TikTok Inc.</p>
+        </footer>
+    </div>
+
+    <script>
+        // FAQ Toggle
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('i');
+                
+                if (answer.style.display === 'block') {
+                    answer.style.display = 'none';
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                } else {
+                    answer.style.display = 'block';
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                }
+            });
+        });
+        
+        // Download Button Handler
+        document.getElementById('download-btn').addEventListener('click', function() {
+            const url = document.getElementById('tiktok-url').value;
+            const loading = document.getElementById('loading');
+            const resultContainer = document.getElementById('result-container');
+            
+            if (!url) {
+                alert('กรุณาใส่ลิงก์วิดีโอ TikTok');
+                return;
+            }
+            
+            if (!url.includes('tiktok.com')) {
+                alert('กรุณาใส่ลิงก์ TikTok ที่ถูกต้อง');
+                return;
+            }
+            
+            // Show loading
+            loading.style.display = 'block';
+            resultContainer.style.display = 'none';
+            
+            // ในเว็บจริงๆ ตรงนี้จะมีการเรียก API เพื่อดึงข้อมูลวิดีโอ
+            // แต่สำหรับตัวอย่างนี้เราจะแสดงผลลัพธ์ตัวอย่างหลังจากหน่วงเวลา
+            setTimeout(() => {
+                loading.style.display = 'none';
+                resultContainer.style.display = 'block';
+                
+                // ตั้งค่า video preview (ตัวอย่าง)
+                document.getElementById('video-preview').innerHTML = `
+                    <source src="#" type="video/mp4">
+                    เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
+                `;
+                
+                // ตั้งค่า download buttons
+                document.getElementById('download-mp4').onclick = function() {
+                    alert('ในเว็บจริง จะเริ่มดาวน์โหลดไฟล์ MP4');
+                };
+                
+                document.getElementById('download-mp3').onclick = function() {
+                    alert('ในเว็บจริง จะเริ่มดาวน์โหลดไฟล์ MP3');
+                };
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
