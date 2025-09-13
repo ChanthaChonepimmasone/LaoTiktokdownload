@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Video Downloader | ດາວໂຫຼດວິດີໂອ TikTok</title>
+    <title>TikTok Video Downloader | ดาวน์โหลดวิดีโอ TikTok</title>
     <style>
         * {
             margin: 0;
@@ -259,6 +259,24 @@
             display: none;
         }
 
+        .api-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .api-status-active {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .api-status-inactive {
+            background-color: #6c757d;
+            color: white;
+        }
+
         @media (max-width: 600px) {
             .input-group {
                 flex-direction: column;
@@ -284,53 +302,63 @@
     <div class="container">
         <header>
             <h1>TikTok Video Downloader</h1>
-            <p>ດາວໂຫຼດວິດີໂອ TikTok ຟີ ບໍຕິດລາຍນ້ຳຊື່ເຈົ້າຂອງວິດີໂອ</p>
+            <p>ดาวน์โหลดวิดีโอ TikTok ฟรี โดยไม่ต้องลงทะเบียน - บริการที่รวดเร็วและใช้งานง่าย</p>
         </header>
         
         <section class="download-section">
-            <h2 style="text-align: center; margin-bottom: 20px;">ດາວໂຫຼດວິດີໂອ TikTok</h2>
+            <h2 style="text-align: center; margin-bottom: 20px;">ดาวน์โหลดวิดีโอ TikTok</h2>
             
-        
+            <div class="api-info">
+                <strong>หมายเหตุ:</strong> บริการนี้ใช้ API ทางเลือก 2 (TikWM) เป็นหลัก
+                <span class="api-status api-status-active" id="current-api-status">API ทางเลือก 2</span>
+            </div>
+
+            <div class="debug-info" id="debug-info">
+                <strong>ข้อมูล Debug:</strong>
+                <div id="debug-content"></div>
+            </div>
 
             <div class="link-warning" id="link-warning">
-                <strong>⚠ ໝາຍເຫດ:</strong> ລິ້ງເປັນຮູບພາບ ບໍ່ແມ່ນວິດີໂອ TikTok ໂປຣດໃຊ້ລິ້ງວິດີໂອແທນ
+                <strong>⚠ หมายเหตุ:</strong> ลิงก์นี้เป็นลิงก์รูปภาพ ไม่ใช่ลิงก์วิดีโอ TikTok โปรดใช้ลิงก์วิดีโอแทน
             </div>
             
             <div class="input-group">
                 <input type="text" id="tiktok-url" placeholder="วางลิงก์วิดีโอ TikTok ที่นี่..." />
-                <button id="download-btn"><i class="fas fa-download"></i> ດາວໂຫຼດ</button>
+                <button id="download-btn"><i class="fas fa-download"></i> ดาวน์โหลด</button>
             </div>
             
             <div class="error-message" id="error-message"></div>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>ກຳລັງປະມວນຜົນວິດີໂອ...</p>
+                <p>กำลังประมวลผลวิดีโอของคุณ...</p>
             </div>
             
             <div class="result-container" id="result-container">
-                <h3>ວິດີໂອພ້ອມແລ້ວ!</h3>
+                <h3>วิดีโอของคุณพร้อมแล้ว!</h3>
                 <div class="video-preview">
                     <video id="video-preview" controls></video>
                 </div>
                 <div class="download-options">
                     <button class="download-btn" id="download-mp4">
-                        <i class="fas fa-video"></i> ດາວໂຫຼດ MP4
+                        <i class="fas fa-video"></i> ดาวน์โหลด MP4
                     </button>
                     <button class="download-btn mp3" id="download-mp3">
-                        <i class="fas fa-music"></i> ດາວໂຫຼດ MP3
+                        <i class="fas fa-music"></i> ดาวน์โหลด MP3
                     </button>
                 </div>
             </div>
 
             <div class="alternative-methods">
-                <h4>หากไม่สามารถเชื่อมต่อได้ ลองวิธีนี้:</h4>
-                <p>ใช้ API ทางเลือกอื่น:</p>
+                <h4>ตัวเลือก API อื่นๆ:</h4>
                 <button id="alternative-btn-1" style="background: #6c757d; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin: 5px;">
                     <i class="fas fa-exchange-alt"></i> ใช้ API ทางเลือก 1
                 </button>
-                <button id="alternative-btn-2" style="background: #6c757d; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin: 5px;">
-                    <i class="fas fa-exchange-alt"></i> ใช้ API ทางเลือก 2
+                <button id="alternative-btn-2" style="background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin: 5px;">
+                    <i class="fas fa-check"></i> ใช้ API ทางเลือก 2 (ปัจจุบัน)
+                </button>
+                <button id="alternative-btn-3" style="background: #6c757d; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin: 5px;">
+                    <i class="fas fa-exchange-alt"></i> ใช้ Cloudflare Worker
                 </button>
             </div>
 
@@ -341,7 +369,7 @@
             <div class="feature">
                 <i class="fas fa-bolt"></i>
                 <h3>รวดเร็วและมีประสิทธิภาพ</h3>
-                <p>ดาวน์โหลดวิดีโอ TikTok ได้อย่างรวดเร็วด้วยเทคโนโลยีล่าสุด</p>
+                <p>ดาวน์โหล드วิดีโอ TikTok ได้อย่างรวดเร็วด้วยเทคโนโลยีล่าสุด</p>
             </div>
             <div class="feature">
                 <i class="fas fa-download"></i>
@@ -393,12 +421,9 @@
     </div>
 
     <script>
-        // URL ของ Cloudflare Worker ของคุณ
-        const WORKER_URL = 'https://laostiktokdownload.jonepms216.workers.dev';
-        
         // ตัวแปรเก็บข้อมูลวิดีโอ
         let videoData = null;
-        let currentApiMethod = 'worker'; // 'worker', 'alternative1', 'alternative2'
+        let currentApiMethod = 'alternative2'; // ตั้งค่าเริ่มต้นเป็น API ทางเลือก 2
         
         // ตรวจสอบลิงก์
         function validateTikTokUrl(url) {
@@ -409,6 +434,22 @@
             } else {
                 document.getElementById('link-warning').style.display = 'none';
                 return true;
+            }
+        }
+        
+        // อัปเดตสถานะ API
+        function updateApiStatus() {
+            const statusElement = document.getElementById('current-api-status');
+            switch(currentApiMethod) {
+                case 'alternative1':
+                    statusElement.textContent = 'API ทางเลือก 1';
+                    break;
+                case 'alternative2':
+                    statusElement.textContent = 'API ทางเลือก 2';
+                    break;
+                case 'worker':
+                    statusElement.textContent = 'Cloudflare Worker';
+                    break;
             }
         }
         
@@ -497,12 +538,6 @@
             let apiUrl, options;
             
             switch(currentApiMethod) {
-                case 'worker':
-                    apiUrl = `${WORKER_URL}?url=${encodeURIComponent(tiktokUrl)}`;
-                    options = {};
-                    showDebugInfo(`ใช้ Cloudflare Worker<br>URL: ${apiUrl}`);
-                    break;
-                    
                 case 'alternative1':
                     // API ทางเลือก 1 - ใช้บริการฟรีอื่น
                     apiUrl = `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(tiktokUrl)}`;
@@ -511,10 +546,17 @@
                     break;
                     
                 case 'alternative2':
-                    // API ทางเลือก 2 - ใช้บริการฟรีอื่น
-                    apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(tiktokUrl)}`;
+                    // API ทางเลือก 2 - ใช้บริการฟรีอื่น (ตัวหลัก)
+                    apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(tiktokUrl)}&hd=1`;
                     options = {};
-                    showDebugInfo(`ใช้ API ทางเลือก 2 (TikWM)<br>URL: ${apiUrl}`);
+                    showDebugInfo(`ใช้ API ทางเลือก 2 (TikWM) - ตัวหลัก<br>URL: ${apiUrl}`);
+                    break;
+                    
+                case 'worker':
+                    // Cloudflare Worker
+                    apiUrl = `https://laostiktokdownload.jonepms216.workers.dev?url=${encodeURIComponent(tiktokUrl)}`;
+                    options = {};
+                    showDebugInfo(`ใช้ Cloudflare Worker<br>URL: ${apiUrl}`);
                     break;
             }
             
@@ -530,20 +572,22 @@
         // ฟังก์ชันประมวลผลข้อมูลจาก API ต่างๆ
         function processApiResponse(data) {
             switch(currentApiMethod) {
-                case 'worker':
-                    if (data.data && data.data.play) return data.data;
-                    if (data.play) return data;
-                    throw new Error('รูปแบบข้อมูลไม่ถูกต้องจาก Worker');
-                    
                 case 'alternative1':
                     if (data.video && data.video.play) return { play: data.video.play };
                     if (data.url) return { play: data.url };
                     throw new Error('รูปแบบข้อมูลไม่ถูกต้องจาก API ทางเลือก 1');
                     
                 case 'alternative2':
+                    // TikWM API response format
                     if (data.data && data.data.play) return data.data;
+                    if (data.data && data.data.hdplay) return { play: data.data.hdplay };
                     if (data.play) return { play: data.play };
                     throw new Error('รูปแบบข้อมูลไม่ถูกต้องจาก API ทางเลือก 2');
+                    
+                case 'worker':
+                    if (data.data && data.data.play) return data.data;
+                    if (data.play) return data;
+                    throw new Error('รูปแบบข้อมูลไม่ถูกต้องจาก Worker');
                     
                 default:
                     throw new Error('วิธีการเรียก API ไม่รู้จัก');
@@ -649,23 +693,45 @@
             this.style.background = '#28a745';
             document.getElementById('alternative-btn-2').innerHTML = '<i class="fas fa-exchange-alt"></i> ใช้ API ทางเลือก 2';
             document.getElementById('alternative-btn-2').style.background = '#6c757d';
+            document.getElementById('alternative-btn-3').innerHTML = '<i class="fas fa-exchange-alt"></i> ใช้ Cloudflare Worker';
+            document.getElementById('alternative-btn-3').style.background = '#6c757d';
+            updateApiStatus();
             showDebugInfo('เปลี่ยนไปใช้ API ทางเลือก 1: Tiklydown');
         });
 
-        // วิธีสำรอง 2
+        // วิธีสำรอง 2 (ตัวหลัก)
         document.getElementById('alternative-btn-2').addEventListener('click', function() {
             currentApiMethod = 'alternative2';
-            this.innerHTML = '<i class="fas fa-check"></i> ใช้ API ทางเลือก 2';
+            this.innerHTML = '<i class="fas fa-check"></i> ใช้ API ทางเลือก 2 (ปัจจุบัน)';
             this.style.background = '#28a745';
             document.getElementById('alternative-btn-1').innerHTML = '<i class="fas fa-exchange-alt"></i> ใช้ API ทางเลือก 1';
             document.getElementById('alternative-btn-1').style.background = '#6c757d';
-            showDebugInfo('เปลี่ยนไปใช้ API ทางเลือก 2: TikWM');
+            document.getElementById('alternative-btn-3').innerHTML = '<i class="fas fa-exchange-alt"></i> ใช้ Cloudflare Worker';
+            document.getElementById('alternative-btn-3').style.background = '#6c757d';
+            updateApiStatus();
+            showDebugInfo('เปลี่ยนไปใช้ API ทางเลือก 2: TikWM (ตัวหลัก)');
+        });
+
+        // Cloudflare Worker
+        document.getElementById('alternative-btn-3').addEventListener('click', function() {
+            currentApiMethod = 'worker';
+            this.innerHTML = '<i class="fas fa-check"></i> ใช้ Cloudflare Worker';
+            this.style.background = '#28a745';
+            document.getElementById('alternative-btn-1').innerHTML = '<i class="fas fa-exchange-alt"></i> ใช้ API ทางเลือก 1';
+            document.getElementById('alternative-btn-1').style.background = '#6c757d';
+            document.getElementById('alternative-btn-2').innerHTML = '<i class="fas fa-exchange-alt"></i> ใช้ API ทางเลือก 2';
+            document.getElementById('alternative-btn-2').style.background = '#6c757d';
+            updateApiStatus();
+            showDebugInfo('เปลี่ยนไปใช้ Cloudflare Worker');
         });
 
         // ตรวจสอบลิงก์เมื่อผู้ใช้พิมพ์
         document.getElementById('tiktok-url').addEventListener('input', function() {
             validateTikTokUrl(this.value);
         });
+
+        // อัปเดตสถานะเริ่มต้น
+        updateApiStatus();
     </script>
 </body>
 </html>
