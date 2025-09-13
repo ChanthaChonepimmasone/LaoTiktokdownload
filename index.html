@@ -368,10 +368,8 @@
     </div>
 
     <script>
-        // URL ของ Cloudflare Worker ของคุณ - แก้ไขเป็น URL จริงของคุณ
-        // ตัวอย่าง: https://laostiktokdownload.jonepms216.workers.dev
-        // หากยังไม่ทราบ URL ให้ลองใช้ค่าเริ่มต้นนี้ก่อน
-        let WORKER_URL = 'https://laostiktokdownload.jonepms216.workers.dev';
+        // URL ของ Cloudflare Worker ของคุณ
+        const WORKER_URL = 'https://laostiktokdownload.jonepms216.workers.dev';
         
         // ตัวแปรเก็บข้อมูลวิดีโอ
         let videoData = null;
@@ -386,9 +384,9 @@
             } catch (e) {
                 console.error('Worker test failed:', e);
                 // ลองใช้ URL อื่นหาก URL หลักไม่ทำงาน
-                WORKER_URL = 'https://tiktok-downloader-worker.jonepms216.workers.dev';
+                const fallbackUrl = 'https://tiktok-downloader-worker.jonepms216.workers.dev';
                 try {
-                    const fallbackTest = await fetch(WORKER_URL);
+                    const fallbackTest = await fetch(fallbackUrl);
                     if (fallbackTest.status === 200) {
                         return true;
                     }
