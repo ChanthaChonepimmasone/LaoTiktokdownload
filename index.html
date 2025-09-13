@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Video Downloader | ดาวน์โหลดวิดีโอ TikTok</title>
+    <title>TikTok Video Downloader | ດາວໂຫຼດວິດີໂອ TikTok</title>
     <style>
         * {
             margin: 0;
@@ -284,48 +284,41 @@
     <div class="container">
         <header>
             <h1>TikTok Video Downloader</h1>
-            <p>ดาวน์โหลดวิดีโอ TikTok ฟรี โดยไม่ต้องลงทะเบียน - บริการที่รวดเร็วและใช้งานง่าย</p>
+            <p>ດາວໂຫຼດວິດີໂອ TikTok ຟີ ບໍຕິດລາຍນ້ຳຊື່ເຈົ້າຂອງວິດີໂອ</p>
         </header>
         
         <section class="download-section">
-            <h2 style="text-align: center; margin-bottom: 20px;">ดาวน์โหลดวิดีโอ TikTok</h2>
+            <h2 style="text-align: center; margin-bottom: 20px;">ດາວໂຫຼດວິດີໂອ TikTok</h2>
             
-            <div class="api-info">
-                <strong>หมายเหตุ:</strong> บริการนี้ใช้ Cloudflare Workers เป็น backend เพื่อหลีกเลี่ยงปัญหา CORS
-            </div>
-
-            <div class="debug-info" id="debug-info">
-                <strong>ข้อมูล Debug:</strong>
-                <div id="debug-content"></div>
-            </div>
+        
 
             <div class="link-warning" id="link-warning">
-                <strong>⚠ หมายเหตุ:</strong> ลิงก์นี้เป็นลิงก์รูปภาพ ไม่ใช่ลิงก์วิดีโอ TikTok โปรดใช้ลิงก์วิดีโอแทน
+                <strong>⚠ ໝາຍເຫດ:</strong> ລິ້ງເປັນຮູບພາບ ບໍ່ແມ່ນວິດີໂອ TikTok ໂປຣດໃຊ້ລິ້ງວິດີໂອແທນ
             </div>
             
             <div class="input-group">
                 <input type="text" id="tiktok-url" placeholder="วางลิงก์วิดีโอ TikTok ที่นี่..." />
-                <button id="download-btn"><i class="fas fa-download"></i> ดาวน์โหลด</button>
+                <button id="download-btn"><i class="fas fa-download"></i> ດາວໂຫຼດ</button>
             </div>
             
             <div class="error-message" id="error-message"></div>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>กำลังประมวลผลวิดีโอของคุณ...</p>
+                <p>ກຳລັງປະມວນຜົນວິດີໂອ...</p>
             </div>
             
             <div class="result-container" id="result-container">
-                <h3>วิดีโอของคุณพร้อมแล้ว!</h3>
+                <h3>ວິດີໂອພ້ອມແລ້ວ!</h3>
                 <div class="video-preview">
                     <video id="video-preview" controls></video>
                 </div>
                 <div class="download-options">
                     <button class="download-btn" id="download-mp4">
-                        <i class="fas fa-video"></i> ดาวน์โหลด MP4
+                        <i class="fas fa-video"></i> ດາວໂຫຼດ MP4
                     </button>
                     <button class="download-btn mp3" id="download-mp3">
-                        <i class="fas fa-music"></i> ดาวน์โหลด MP3
+                        <i class="fas fa-music"></i> ດາວໂຫຼດ MP3
                     </button>
                 </div>
             </div>
