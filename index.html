@@ -224,6 +224,24 @@
             font-size: 14px;
         }
 
+        .debug-info {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+        }
+
+        #debug-toggle {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
         @media (max-width: 600px) {
             .input-group {
                 flex-direction: column;
@@ -258,6 +276,11 @@
             <div class="api-info">
                 <strong>หมายเหตุ:</strong> บริการนี้ใช้ Cloudflare Workers เป็น backend เพื่อหลีกเลี่ยงปัญหา CORS
             </div>
+
+            <div class="debug-info" id="debug-info">
+                <strong>ข้อมูล Debug:</strong>
+                <div id="debug-content"></div>
+            </div>
             
             <div class="input-group">
                 <input type="text" id="tiktok-url" placeholder="วางลิงก์วิดีโอ TikTok ที่นี่..." />
@@ -285,6 +308,8 @@
                     </button>
                 </div>
             </div>
+
+            <div id="debug-toggle" onclick="toggleDebug()">แสดงข้อมูล Debug</div>
         </section>
         
         <section class="features">
@@ -345,10 +370,34 @@
     <script>
         // URL ของ Cloudflare Worker ของคุณ - แก้ไขเป็น URL จริงของคุณ
         // ตัวอย่าง: https://laostiktokdownload.jonepms216.workers.dev
-        const WORKER_URL = 'https://laostiktokdownload.jonepms216.workers.dev';
+        // หากยังไม่ทราบ URL ให้ลองใช้ค่าเริ่มต้นนี้ก่อน
+        let WORKER_URL = 'https://laostiktokdownload.jonepms216.workers.dev';
         
         // ตัวแปรเก็บข้อมูลวิดีโอ
         let videoData = null;
+        
+        // ฟังก์ชันสำหรับทดสอบ Worker URL
+        async function testWorkerUrl() {
+            try {
+                const testResponse = await fetch(WORKER_URL);
+                if (testResponse.status === 200) {
+                    return true;
+                }
+            } catch (e) {
+                console.error('Worker test failed:', e);
+                // ลองใช้ URL อื่นหาก URL หลักไม่ทำงาน
+                WORKER_URL = 'https://tiktok-downloader-worker.jonepms216.workers.dev';
+                try {
+                    const fallbackTest = await fetch(WORKER_URL);
+                    if (fallbackTest.status === 200) {
+                        return true;
+                    }
+                } catch (e2) {
+                    console.error('Fallback worker also failed:', e2);
+                }
+            }
+            return false;
+        }
         
         // FAQ Toggle
         document.querySelectorAll('.faq-question').forEach(question => {
@@ -378,6 +427,27 @@
             setTimeout(() => {
                 errorElement.style.display = 'none';
             }, 5000);
+        }
+        
+        // ฟังก์ชันแสดงข้อมูล debug
+        function showDebugInfo(info) {
+            const debugElement = document.getElementById('debug-content');
+            debugElement.textContent = info;
+            document.getElementById('debug-info').style.display = 'block';
+        }
+        
+        // ฟังก์ชันสลับแสดง/ซ่อน debug
+        function toggleDebug() {
+            const debugInfo = document.getElementById('debug-info');
+            const debugToggle = document.getElementById('debug-toggle');
+            
+            if (debugInfo.style.display === 'block') {
+                debugInfo.style.display = 'none';
+                debugToggle.textContent = 'แสดงข้อมูล Debug';
+            } else {
+                debugInfo.style.display = 'block';
+                debugToggle.textContent = 'ซ่อนข้อมูล Debug';
+            }
         }
         
         // ฟังก์ชันดาวน์โหลดไฟล์
@@ -423,6 +493,7 @@
             
             // ซ่อนข้อความ error ที่อาจแสดงอยู่
             errorElement.style.display = 'none';
+            document.getElementById('debug-info').style.display = 'none';
             
             if (!url) {
                 showError('กรุณาใส่ลิงก์วิดีโอ TikTok');
@@ -439,18 +510,28 @@
             resultContainer.style.display = 'none';
             
             try {
+                // ทดสอบว่า Worker URL ทำงานได้หรือไม่
+                const isWorkerActive = await testWorkerUrl();
+                if (!isWorkerActive) {
+                    throw new Error('ไม่สามารถเชื่อมต่อกับ Server ได้ กรุณาลองใหม่ในภายหลัง');
+                }
+                
                 // เรียก Cloudflare Worker API ของคุณ
                 console.log('Calling Worker URL:', `${WORKER_URL}?url=${encodeURIComponent(url)}`);
+                showDebugInfo(`เรียก URL: ${WORKER_URL}?url=${encodeURIComponent(url)}`);
+                
                 const response = await fetch(`${WORKER_URL}?url=${encodeURIComponent(url)}`);
                 
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error('Server response error:', response.status, errorText);
+                    showDebugInfo(`ข้อผิดพลาดจาก Server: ${response.status} - ${errorText}`);
                     throw new Error(`ไม่สามารถดึงข้อมูลวิดีโอได้: ${response.status}`);
                 }
                 
                 const data = await response.json();
                 console.log('Response data:', data);
+                showDebugInfo(`ข้อมูลที่ได้รับ: ${JSON.stringify(data, null, 2)}`);
                 
                 // ตรวจสอบรูปแบบการตอบกลับ (อาจแตกต่างกันขึ้นอยู่กับ Worker)
                 if (data.data && data.data.play) {
@@ -459,6 +540,8 @@
                 } else if (data.play) {
                     // รูปแบบตรงจาก Worker
                     videoData = data;
+                } else if (data.error) {
+                    throw new Error(data.error);
                 } else {
                     throw new Error(data.msg || 'รูปแบบข้อมูลไม่ถูกต้อง');
                 }
@@ -470,6 +553,7 @@
                 
             } catch (error) {
                 console.error('Error:', error);
+                showDebugInfo(`ข้อผิดพลาด: ${error.message}`);
                 showError(error.message || 'เกิดข้อผิดพลาดในการดาวน์โหลดวิดีโอ');
             } finally {
                 loading.style.display = 'none';
@@ -510,6 +594,16 @@
                 // คืนค่าสถานะปุ่มเดิม
                 mp3Button.innerHTML = originalText;
                 mp3Button.disabled = false;
+            }
+        });
+
+        // พยายามโหลด Worker URL เมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', async function() {
+            const isWorkerActive = await testWorkerUrl();
+            if (!isWorkerActive) {
+                showDebugInfo('Worker URL ไม่สามารถเชื่อมต่อได้ กรุณาตรวจสอบ URL');
+            } else {
+                showDebugInfo(`Worker URL พร้อมใช้งาน: ${WORKER_URL}`);
             }
         });
     </script>
