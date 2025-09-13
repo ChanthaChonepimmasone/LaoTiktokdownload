@@ -250,6 +250,15 @@
             margin: 20px 0;
         }
 
+        .link-warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: none;
+        }
+
         @media (max-width: 600px) {
             .input-group {
                 flex-direction: column;
@@ -289,6 +298,10 @@
                 <strong>ข้อมูล Debug:</strong>
                 <div id="debug-content"></div>
             </div>
+
+            <div class="link-warning" id="link-warning">
+                <strong>⚠ หมายเหตุ:</strong> ลิงก์นี้เป็นลิงก์รูปภาพ ไม่ใช่ลิงก์วิดีโอ TikTok โปรดใช้ลิงก์วิดีโอแทน
+            </div>
             
             <div class="input-group">
                 <input type="text" id="tiktok-url" placeholder="วางลิงก์วิดีโอ TikTok ที่นี่..." />
@@ -319,9 +332,12 @@
 
             <div class="alternative-methods">
                 <h4>หากไม่สามารถเชื่อมต่อได้ ลองวิธีนี้:</h4>
-                <p>ใช้ API ตรงจาก RapidAPI (ไม่ต้องผ่าน Worker):</p>
-                <button id="alternative-btn" style="background: #6c757d; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">
-                    <i class="fas fa-exchange-alt"></i> ใช้วิธีสำรอง
+                <p>ใช้ API ทางเลือกอื่น:</p>
+                <button id="alternative-btn-1" style="background: #6c757d; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin: 5px;">
+                    <i class="fas fa-exchange-alt"></i> ใช้ API ทางเลือก 1
+                </button>
+                <button id="alternative-btn-2" style="background: #6c757d; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin: 5px;">
+                    <i class="fas fa-exchange-alt"></i> ใช้ API ทางเลือก 2
                 </button>
             </div>
 
@@ -386,13 +402,22 @@
     <script>
         // URL ของ Cloudflare Worker ของคุณ
         const WORKER_URL = 'https://laostiktokdownload.jonepms216.workers.dev';
-        const RAPIDAPI_URL = 'https://tiktok-video-no-watermark2.p.rapidapi.com';
-        const RAPIDAPI_KEY = 'e1fe9f5e84mshc2af2c71e5afe63p157397jsnc717460c6b6c';
-        const RAPIDAPI_HOST = 'tiktok-video-no-watermark2.p.rapidapi.com';
         
         // ตัวแปรเก็บข้อมูลวิดีโอ
         let videoData = null;
-        let useAlternativeMethod = false;
+        let currentApiMethod = 'worker'; // 'worker', 'alternative1', 'alternative2'
+        
+        // ตรวจสอบลิงก์
+        function validateTikTokUrl(url) {
+            // ตรวจสอบว่าเป็นลิงก์รูปภาพหรือไม่
+            if (url.includes('/photo/')) {
+                document.getElementById('link-warning').style.display = 'block';
+                return false;
+            } else {
+                document.getElementById('link-warning').style.display = 'none';
+                return true;
+            }
+        }
         
         // FAQ Toggle
         document.querySelectorAll('.faq-question').forEach(question => {
@@ -417,11 +442,6 @@
             const errorElement = document.getElementById('error-message');
             errorElement.textContent = message;
             errorElement.style.display = 'block';
-            
-            // ซ่อนข้อความ error หลังจาก 5 วินาที
-            setTimeout(() => {
-                errorElement.style.display = 'none';
-            }, 5000);
         }
         
         // ฟังก์ชันแสดงข้อมูล debug
@@ -479,41 +499,61 @@
             }
         }
         
-        // ฟังก์ชันเรียก API หลัก
+        // ฟังก์ชันเรียก API ต่างๆ
         async function fetchTikTokData(tiktokUrl) {
-            if (useAlternativeMethod) {
-                // ใช้ RapidAPI โดยตรง
-                showDebugInfo(`ใช้วิธีสำรอง: เรียก RapidAPI โดยตรง<br>URL: ${RAPIDAPI_URL}/?url=${encodeURIComponent(tiktokUrl)}`);
-                
-                const response = await fetch(`${RAPIDAPI_URL}/?url=${encodeURIComponent(tiktokUrl)}`, {
-                    headers: {
-                        'X-RapidAPI-Key': RAPIDAPI_KEY,
-                        'X-RapidAPI-Host': RAPIDAPI_HOST
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`RapidAPI error: ${response.status}`);
-                }
-                
-                return await response.json();
-            } else {
-                // ใช้ Cloudflare Worker
-                showDebugInfo(`ใช้ Cloudflare Worker<br>URL: ${WORKER_URL}?url=${encodeURIComponent(tiktokUrl)}`);
-                
-                const response = await fetch(`${WORKER_URL}?url=${encodeURIComponent(tiktokUrl)}`);
-                
-                if (!response.ok) {
-                    // หาก Worker ไม่ทำงาน ให้สลับไปใช้วิธีสำรอง
-                    if (response.status === 0 || response.status >= 500) {
-                        useAlternativeMethod = true;
-                        showDebugInfo(`Worker ไม่ตอบสนอง สลับไปใช้วิธีสำรอง`);
-                        return await fetchTikTokData(tiktokUrl);
-                    }
-                    throw new Error(`Worker error: ${response.status}`);
-                }
-                
-                return await response.json();
+            let apiUrl, options;
+            
+            switch(currentApiMethod) {
+                case 'worker':
+                    apiUrl = `${WORKER_URL}?url=${encodeURIComponent(tiktokUrl)}`;
+                    options = {};
+                    showDebugInfo(`ใช้ Cloudflare Worker<br>URL: ${apiUrl}`);
+                    break;
+                    
+                case 'alternative1':
+                    // API ทางเลือก 1 - ใช้บริการฟรีอื่น
+                    apiUrl = `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(tiktokUrl)}`;
+                    options = {};
+                    showDebugInfo(`ใช้ API ทางเลือก 1 (Tiklydown)<br>URL: ${apiUrl}`);
+                    break;
+                    
+                case 'alternative2':
+                    // API ทางเลือก 2 - ใช้บริการฟรีอื่น
+                    apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(tiktokUrl)}`;
+                    options = {};
+                    showDebugInfo(`ใช้ API ทางเลือก 2 (TikWM)<br>URL: ${apiUrl}`);
+                    break;
+            }
+            
+            const response = await fetch(apiUrl, options);
+            
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+            
+            return await response.json();
+        }
+        
+        // ฟังก์ชันประมวลผลข้อมูลจาก API ต่างๆ
+        function processApiResponse(data) {
+            switch(currentApiMethod) {
+                case 'worker':
+                    if (data.data && data.data.play) return data.data;
+                    if (data.play) return data;
+                    throw new Error('รูปแบบข้อมูลไม่ถูกต้องจาก Worker');
+                    
+                case 'alternative1':
+                    if (data.video && data.video.play) return { play: data.video.play };
+                    if (data.url) return { play: data.url };
+                    throw new Error('รูปแบบข้อมูลไม่ถูกต้องจาก API ทางเลือก 1');
+                    
+                case 'alternative2':
+                    if (data.data && data.data.play) return data.data;
+                    if (data.play) return { play: data.play };
+                    throw new Error('รูปแบบข้อมูลไม่ถูกต้องจาก API ทางเลือก 2');
+                    
+                default:
+                    throw new Error('วิธีการเรียก API ไม่รู้จัก');
             }
         }
         
@@ -538,6 +578,12 @@
                 return;
             }
             
+            // ตรวจสอบลิงก์
+            if (!validateTikTokUrl(url)) {
+                showError('ลิงก์นี้เป็นลิงก์รูปภาพ โปรดใช้ลิงก์วิดีโอแทน');
+                return;
+            }
+            
             // Show loading
             loading.style.display = 'block';
             resultContainer.style.display = 'none';
@@ -548,18 +594,8 @@
                 console.log('Response data:', data);
                 showDebugInfo(`ข้อมูลที่ได้รับ: ${JSON.stringify(data, null, 2)}`);
                 
-                // ตรวจสอบรูปแบบการตอบกลับ
-                if (data.data && data.data.play) {
-                    videoData = data.data;
-                } else if (data.play) {
-                    videoData = data;
-                } else if (data.error) {
-                    throw new Error(data.error);
-                } else if (data.msg) {
-                    throw new Error(data.msg);
-                } else {
-                    throw new Error('รูปแบบข้อมูลไม่ถูกต้องจาก Server');
-                }
+                // ประมวลผลข้อมูล
+                videoData = processApiResponse(data);
                 
                 // แสดงผลลัพธ์
                 const videoPreview = document.getElementById('video-preview');
@@ -613,24 +649,29 @@
             }
         });
 
-        // วิธีสำรอง
-        document.getElementById('alternative-btn').addEventListener('click', function() {
-            useAlternativeMethod = true;
-            this.innerHTML = '<i class="fas fa-check"></i> กำลังใช้วิธีสำรอง';
+        // วิธีสำรอง 1
+        document.getElementById('alternative-btn-1').addEventListener('click', function() {
+            currentApiMethod = 'alternative1';
+            this.innerHTML = '<i class="fas fa-check"></i> ใช้ API ทางเลือก 1';
             this.style.background = '#28a745';
-            showDebugInfo('เปลี่ยนไปใช้วิธีสำรอง: เรียก RapidAPI โดยตรง');
+            document.getElementById('alternative-btn-2').innerHTML = '<i class="fas fa-exchange-alt"></i> ใช้ API ทางเลือก 2';
+            document.getElementById('alternative-btn-2').style.background = '#6c757d';
+            showDebugInfo('เปลี่ยนไปใช้ API ทางเลือก 1: Tiklydown');
         });
 
-        // พยายามทดสอบ Worker URL เมื่อหน้าเว็บโหลดเสร็จ
-        document.addEventListener('DOMContentLoaded', async function() {
-            try {
-                const testResponse = await fetch(WORKER_URL, { method: 'HEAD' });
-                if (testResponse.ok) {
-                    showDebugInfo('Worker URL พร้อมใช้งาน: ' + WORKER_URL);
-                }
-            } catch (e) {
-                showDebugInfo('Worker URL ไม่สามารถเชื่อมต่อได้: ' + WORKER_URL);
-            }
+        // วิธีสำรอง 2
+        document.getElementById('alternative-btn-2').addEventListener('click', function() {
+            currentApiMethod = 'alternative2';
+            this.innerHTML = '<i class="fas fa-check"></i> ใช้ API ทางเลือก 2';
+            this.style.background = '#28a745';
+            document.getElementById('alternative-btn-1').innerHTML = '<i class="fas fa-exchange-alt"></i> ใช้ API ทางเลือก 1';
+            document.getElementById('alternative-btn-1').style.background = '#6c757d';
+            showDebugInfo('เปลี่ยนไปใช้ API ทางเลือก 2: TikWM');
+        });
+
+        // ตรวจสอบลิงก์เมื่อผู้ใช้พิมพ์
+        document.getElementById('tiktok-url').addEventListener('input', function() {
+            validateTikTokUrl(this.value);
         });
     </script>
 </body>
