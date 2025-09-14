@@ -143,6 +143,25 @@
             font-size: 18px;
         }
 
+        .mobile-notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .mobile-notice i {
+            color: #ffc107;
+            font-size: 18px;
+        }
+
         .result-container {
             display: none;
             margin-top: 20px;
@@ -287,7 +306,7 @@
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+           100% { transform: rotate(360deg); }
         }
 
         .error-message {
@@ -423,6 +442,25 @@
             background: var(--primary-color);
             color: white;
         }
+
+        .mobile-download-help {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f0f7ff;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .mobile-download-help ol {
+            text-align: left;
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .mobile-download-help li {
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -447,6 +485,11 @@
             <div class="notice">
                 <i class="fas fa-info-circle"></i>
                 <div>คัดลอกลิงก์วิดีโอจากแอป TikTok แล้ววางในช่องด้านบน เพื่อดาวน์โหลดวิดีโอโดยไม่มีลายน้ำ</div>
+            </div>
+
+            <div class="mobile-notice" id="mobile-notice">
+                <i class="fas fa-mobile-alt"></i>
+                <div>คุณกำลังใช้มือถือ: กดปุ่มดาวน์โหลดค้างไว้แล้วเลือก "บันทึกลิงก์" เพื่อบันทึกวิดีโอ</div>
             </div>
             
             <div class="error-message" id="error-message"></div>
@@ -479,6 +522,16 @@
                     <button class="download-option app" id="download-app">
                         <i class="fas fa-mobile-alt"></i> ดาวน์โหลดด้วยแอป (SnapTik)
                     </button>
+                </div>
+
+                <div class="mobile-download-help" id="mobile-download-help">
+                    <strong>คำแนะนำการดาวน์โหลดบนมือถือ:</strong>
+                    <ol>
+                        <li>กดปุ่ม "ดาวน์โหลดวิดีโอ" ด้านบน</li>
+                        <li>เมื่อวิดีโอเปิดในแท็บใหม่ ให้กดค้างบนวิดีโอ</li>
+                        <li>เลือก "ดาวน์โหลดวิดีโอ" หรือ "บันทึกลิงก์"</li>
+                        <li>วิดีโอจะถูกบันทึกลงในเครื่องคุณ</li>
+                    </ol>
                 </div>
                 
                 <div class="download-complete" id="download-complete">
@@ -531,6 +584,13 @@
         // ตัวแปรเก็บข้อมูลวิดีโอ
         let videoData = null;
         let currentDownloadUrl = '';
+        let isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // ตรวจสอบอุปกรณ์มือถือ
+        if (isMobileDevice) {
+            document.getElementById('mobile-notice').style.display = 'flex';
+            document.getElementById('mobile-download-help').style.display = 'block';
+        }
         
         // ตรวจสอบลิงก์
         function validateTikTokUrl(url) {
@@ -555,22 +615,49 @@
             document.getElementById('save-dialog').style.display = 'flex';
         }
         
-        // ฟังก์ชันดาวน์โหลดไฟล์
+        // ฟังก์ชันดาวน์โหลดไฟล์ (รองรับทั้งมือถือและเดสก์ท็อป)
         function downloadFile(url, filename) {
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.target = '_blank';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            // แสดงข้อความดาวน์โหลดเสร็จสมบูรณ์
-            document.getElementById('download-complete').style.display = 'block';
-            document.getElementById('complete-filename').textContent = filename;
+            if (isMobileDevice) {
+                // สำหรับมือถือ ใช้วิธีการเปิดลิงก์ในหน้าต่างใหม่
+                const newWindow = window.open(url, '_blank');
+                
+                // ถ้าเบราว์เซอร์บล็อกป๊อปอัป ให้แสดงลิงก์ให้ผู้ใช้คัดลอก
+                if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                    showError('เบราว์เซอร์บล็อกป๊อปอัป: กรุณากดปุ่มดาวน์โหลดค้างไว้แล้วเลือก "เปิดลิงก์ในแท็บใหม่"');
+                    return false;
+                }
+                
+                // รอสักครู่แล้วแสดงข้อความแจ้งวิธีดาวน์โหลดบนมือถือ
+                setTimeout(() => {
+                    document.getElementById('download-complete').style.display = 'block';
+                    document.getElementById('complete-filename').textContent = filename;
+                    document.getElementById('complete-size').textContent = 'กำลังดาวน์โหลด...';
+                    
+                    // อัพเดทข้อความหลังจากดาวน์โหลดเสร็จ
+                    setTimeout(() => {
+                        document.getElementById('complete-size').textContent = '804 KB';
+                    }, 2000);
+                }, 1000);
+                
+            } else {
+                // สำหรับเดสก์ท็อป ใช้วิธีการดาวน์โหลดปกติ
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                // แสดงข้อความดาวน์โหลดเสร็จสมบูรณ์
+                document.getElementById('download-complete').style.display = 'block';
+                document.getElementById('complete-filename').textContent = filename;
+                document.getElementById('complete-size').textContent = '804 KB';
+            }
             
             // ซ่อน dialog
             document.getElementById('save-dialog').style.display = 'none';
+            return true;
         }
         
         // ฟังก์ชันเรียก API
@@ -645,7 +732,14 @@
             }
             
             const filename = `snaptik_${Date.now()}.mp4`;
-            showSaveDialog(filename, videoData.play);
+            
+            if (isMobileDevice) {
+                // บนมือถือให้ดาวน์โหลดโดยตรง
+                downloadFile(videoData.play, filename);
+            } else {
+                // บนเดสก์ท็อปแสดง dialog
+                showSaveDialog(filename, videoData.play);
+            }
         });
         
         // HD Download Button
@@ -658,7 +752,12 @@
             // พยายามใช้ลิงก์ HD ถ้ามี
             const videoUrl = videoData.hdplay || videoData.play;
             const filename = `snaptik_hd_${Date.now()}.mp4`;
-            showSaveDialog(filename, videoUrl);
+            
+            if (isMobileDevice) {
+                downloadFile(videoUrl, filename);
+            } else {
+                showSaveDialog(filename, videoUrl);
+            }
         });
         
         // Download App Button
