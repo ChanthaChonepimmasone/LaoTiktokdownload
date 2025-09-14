@@ -28,22 +28,18 @@
             background-color: var(--gray-color);
             color: var(--text-color);
             line-height: 1.6;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
         }
 
         .container {
-            max-width: 500px;
-            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         header {
             text-align: center;
             margin-bottom: 30px;
+            padding: 20px 0;
         }
 
         .logo {
@@ -170,7 +166,6 @@
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
         }
 
         .video-details {
@@ -203,7 +198,6 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 20px;
         }
 
         .download-option {
@@ -235,28 +229,6 @@
             background: linear-gradient(45deg, #1877f2, #0e5a9d);
         }
 
-        .download-complete {
-            background: #e8f5e9;
-            color: #388e3c;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: left;
-            display: none;
-        }
-
-        .download-complete i {
-            margin-right: 10px;
-        }
-
-        .file-info {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
         .other-video {
             margin-top: 20px;
             padding-top: 20px;
@@ -267,6 +239,16 @@
             font-size: 1.1rem;
             margin-bottom: 15px;
             color: var(--dark-color);
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #388e3c;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+            text-align: left;
         }
 
         .loading {
@@ -307,7 +289,6 @@
             color: #666;
             border-top: 1px solid #eee;
             font-size: 0.9rem;
-            width: 100%;
         }
 
         .footer-links {
@@ -361,68 +342,6 @@
             text-decoration: none;
             font-weight: 600;
         }
-
-        /* Save dialog styles */
-        .save-dialog {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .save-dialog-content {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .save-dialog-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: var(--dark-color);
-        }
-
-        .save-dialog-filename {
-            background: #f5f5f5;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            word-break: break-all;
-        }
-
-        .save-dialog-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .save-dialog-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .save-dialog-btn.cancel {
-            background: #f5f5f5;
-            color: #333;
-        }
-
-        .save-dialog-btn.save {
-            background: var(--primary-color);
-            color: white;
-        }
     </style>
 </head>
 <body>
@@ -450,6 +369,7 @@
             </div>
             
             <div class="error-message" id="error-message"></div>
+            <div class="success-message" id="success-message"></div>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
@@ -458,10 +378,10 @@
             
             <div class="result-container" id="result-container">
                 <div class="video-info">
-                    <div class="author-avatar"></div>
+                    <img src="https://via.placeholder.com/50" class="author-avatar" id="author-avatar">
                     <div class="video-details">
-                        <div class="video-author" id="video-author">Bĕbaďáha</div>
-                        <div class="video-description" id="video-description">80 1200 1 3 tiktok</div>
+                        <div class="video-author" id="video-author">ผู้ใช้ TikTok</div>
+                        <div class="video-description" id="video-description">วิดีโอจาก TikTok</div>
                     </div>
                 </div>
                 
@@ -481,18 +401,11 @@
                     </button>
                 </div>
                 
-                <div class="download-complete" id="download-complete">
-                    <div>
-                        <i class="fas fa-check-circle"></i> ดาวน์โหลดเสร็จสมบูรณ์
-                    </div>
-                    <div class="file-info">
-                        <span id="complete-filename">snaptik_7549587900376321298_v2.mp4</span>
-                        <span id="complete-size">804 KB</span>
-                    </div>
-                </div>
-                
                 <div class="other-video">
                     <div class="other-title">ดาวน์โหลดวิดีโออื่น</div>
+                    <div class="success-message" id="download-complete">
+                        <i class="fas fa-check-circle"></i> ดาวน์โหลดเสร็จสมบูรณ์: snaptik_7549...1298_v2.mp4
+                    </div>
                     <button class="download-option" id="download-other">
                         <i class="fas fa-download"></i> ดาวน์โหลดวิดีโออื่น
                     </button>
@@ -515,22 +428,9 @@
         </footer>
     </div>
 
-    <!-- Save Dialog -->
-    <div class="save-dialog" id="save-dialog">
-        <div class="save-dialog-content">
-            <h3 class="save-dialog-title">เลือกตำแหน่งที่จะบันทึก</h3>
-            <div class="save-dialog-filename" id="save-filename">snaptik_7549587900376321298_v2.mp4</div>
-            <div class="save-dialog-buttons">
-                <button class="save-dialog-btn cancel" id="save-cancel">ยกเลิก</button>
-                <button class="save-dialog-btn save" id="save-confirm">บันทึก</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         // ตัวแปรเก็บข้อมูลวิดีโอ
         let videoData = null;
-        let currentDownloadUrl = '';
         
         // ตรวจสอบลิงก์
         function validateTikTokUrl(url) {
@@ -543,16 +443,18 @@
             const errorElement = document.getElementById('error-message');
             errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
             errorElement.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
             
             // ซ่อน loading
             document.getElementById('loading').style.display = 'none';
         }
         
-        // ฟังก์ชันแสดง dialog บันทึกไฟล์
-        function showSaveDialog(filename, downloadUrl) {
-            document.getElementById('save-filename').textContent = filename;
-            currentDownloadUrl = downloadUrl;
-            document.getElementById('save-dialog').style.display = 'flex';
+        // ฟังก์ชันแสดงข้อความสำเร็จ
+        function showSuccess(message) {
+            const successElement = document.getElementById('success-message');
+            successElement.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            successElement.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
         }
         
         // ฟังก์ชันดาวน์โหลดไฟล์
@@ -567,10 +469,12 @@
             
             // แสดงข้อความดาวน์โหลดเสร็จสมบูรณ์
             document.getElementById('download-complete').style.display = 'block';
-            document.getElementById('complete-filename').textContent = filename;
+            showSuccess('กำลังดาวน์โหลด...');
             
-            // ซ่อน dialog
-            document.getElementById('save-dialog').style.display = 'none';
+            // ลบข้อความหลังจาก 3 วินาที
+            setTimeout(() => {
+                document.getElementById('success-message').style.display = 'none';
+            }, 3000);
         }
         
         // ฟังก์ชันเรียก API
@@ -596,6 +500,7 @@
             
             // ซ่อนข้อความ error ที่อาจแสดงอยู่
             errorElement.style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
             
             if (!url) {
                 showError('กรุณาใส่ลิงก์วิดีโอ TikTok');
@@ -645,7 +550,7 @@
             }
             
             const filename = `snaptik_${Date.now()}.mp4`;
-            showSaveDialog(filename, videoData.play);
+            downloadFile(videoData.play, filename);
         });
         
         // HD Download Button
@@ -658,12 +563,17 @@
             // พยายามใช้ลิงก์ HD ถ้ามี
             const videoUrl = videoData.hdplay || videoData.play;
             const filename = `snaptik_hd_${Date.now()}.mp4`;
-            showSaveDialog(filename, videoUrl);
+            downloadFile(videoUrl, filename);
         });
         
         // Download App Button
         document.getElementById('download-app').addEventListener('click', function() {
-            window.open('https://apps.apple.com/us/app/snaptik/id1548193893', '_blank');
+            showSuccess('นำทางไปยัง App Store เพื่อดาวน์โหลดแอป SnapTik');
+            
+            // ลิงก์ไปยัง App Store (จำลอง)
+            setTimeout(() => {
+                window.open('https://apps.apple.com/us/app/snaptik/id1548193893', '_blank');
+            }, 1000);
         });
         
         // Download Other Button
@@ -671,16 +581,7 @@
             document.getElementById('tiktok-url').value = '';
             document.getElementById('result-container').style.display = 'none';
             document.getElementById('download-complete').style.display = 'none';
-        });
-
-        // Save Dialog Buttons
-        document.getElementById('save-cancel').addEventListener('click', function() {
-            document.getElementById('save-dialog').style.display = 'none';
-        });
-
-        document.getElementById('save-confirm').addEventListener('click', function() {
-            const filename = document.getElementById('save-filename').textContent;
-            downloadFile(currentDownloadUrl, filename);
+            document.getElementById('success-message').style.display = 'none';
         });
 
         // ตรวจสอบลิงก์เมื่อผู้ใช้พิมพ์
@@ -697,9 +598,6 @@
                 }
             }, 100);
         });
-
-        // ตัวอย่างข้อมูลจากภาพ
-        document.getElementById('tiktok-url').value = "https://www.tiktok.com/@example/video/1234567890";
     </script>
 </body>
 </html>
