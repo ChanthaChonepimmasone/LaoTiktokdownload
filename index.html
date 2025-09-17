@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Video Downloader | ดาวน์โหลดวิดีโอ TikTok โดยไม่มีลายน้ำ</title>
+    <title>TikTok Video & Image Downloader | ดาวน์โหลดวิดีโอและรูปภาพ TikTok โดยไม่มีลายน้ำ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -304,6 +304,10 @@
             .download-card {
                 padding: 25px;
             }
+            
+            .download-options {
+                flex-direction: column;
+            }
         }
 
         /* Loading animation */
@@ -341,6 +345,30 @@
             to { opacity: 1; }
         }
 
+        .content-type-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .badge-video {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .badge-image {
+            background: linear-gradient(45deg, #25d366, #128C7E);
+            color: white;
+        }
+
+        .badge-slideshow {
+            background: linear-gradient(45deg, #ff9900, #ff6600);
+            color: white;
+        }
+
         .video-info {
             display: flex;
             align-items: center;
@@ -370,7 +398,7 @@
             font-size: 0.9rem;
         }
 
-        .video-preview {
+        .media-preview {
             margin-bottom: 25px;
             max-width: 300px;
             margin: 0 auto 25px;
@@ -382,6 +410,29 @@
         #video-preview {
             width: 100%;
             display: block;
+        }
+
+        #image-preview {
+            width: 100%;
+            display: block;
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .gallery-image {
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-image:hover {
+            transform: scale(1.05);
         }
 
         .download-options {
@@ -411,12 +462,26 @@
         }
 
         .download-option.mp3 {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+        }
+
+        .download-option.images {
             background: linear-gradient(45deg, #25d366, #128C7E);
         }
 
         .error-message {
             background: #ffebee;
             color: #d32f2f;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+            text-align: left;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #388e3c;
             padding: 15px;
             border-radius: 8px;
             margin: 20px 0;
@@ -432,51 +497,49 @@
                 <i class="fas fa-video logo-icon"></i>
                 <div class="logo-text">SnapTik</div>
             </div>
-            <h1>TikTok Video Downloader</h1>
-            <p>ดาวน์โหลดวิดีโอ TikTok ฟรีโดยไม่มีลายน้ำ - บริการที่รวดเร็ว ปลอดภัย และใช้งานง่าย</p>
+            <h1>TikTok Video & Image Downloader</h1>
+            <p>ดาวน์โหลดวิดีโอและรูปภาพจาก TikTok ฟรีโดยไม่มีลายน้ำ - บริการที่รวดเร็ว ปลอดภัย และใช้งานง่าย</p>
         </header>
         
         <section class="download-card">
-            <h2 class="card-title">ดาวน์โหลดวิดีโอ TikTok</h2>
+            <h2 class="card-title">ดาวน์โหลดเนื้อหาจาก TikTok</h2>
             
             <div class="input-group">
-                <input type="text" id="tiktok-url" placeholder="วางลิงก์วิดีโอ TikTok ที่นี่...">
+                <input type="text" id="tiktok-url" placeholder="วางลิงก์วิดีโอหรือรูปภาพ TikTok ที่นี่...">
                 <button id="paste-btn"><i class="fas fa-paste"></i></button>
                 <button id="download-btn"><i class="fas fa-download"></i> ดาวน์โหลด</button>
             </div>
             
             <div class="notice">
                 <i class="fas fa-info-circle"></i>
-                <div>คัดลอกลิงก์วิดีโอจากแอป TikTok แล้ววางในช่องด้านบน เพื่อดาวน์โหลดวิดีโอโดยไม่มีลายน้ำ</div>
+                <div>คัดลอกลิงก์วิดีโอหรือรูปภาพจากแอป TikTok แล้ววางในช่องด้านบน เพื่อดาวน์โหลดโดยไม่มีลายน้ำ</div>
             </div>
             
             <div class="error-message" id="error-message"></div>
+            <div class="success-message" id="success-message"></div>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>กำลังประมวลผลวิดีโอของคุณ...</p>
+                <p>กำลังประมวลผลเนื้อหาของคุณ...</p>
             </div>
             
             <div class="result-container" id="result-container">
+                <div class="content-type-badge" id="content-type-badge"></div>
+                
                 <div class="video-info">
                     <img src="https://via.placeholder.com/50" class="author-avatar" id="author-avatar">
                     <div class="video-details">
                         <div class="video-author" id="video-author">TikTok Author</div>
-                        <div class="video-description" id="video-description">วิดีโอจาก TikTok</div>
+                        <div class="video-description" id="video-description">เนื้อหาจาก TikTok</div>
                     </div>
                 </div>
                 
-                <div class="video-preview">
-                    <video id="video-preview" controls></video>
+                <div class="media-preview" id="media-preview">
+                    <!-- วิดีโอหรือรูปภาพจะแสดงที่นี่ -->
                 </div>
                 
-                <div class="download-options">
-                    <button class="download-option" id="download-mp4">
-                        <i class="fas fa-download"></i> ดาวน์โหลด MP4
-                    </button>
-                    <button class="download-option mp3" id="download-mp3">
-                        <i class="fas fa-music"></i> ดาวน์โหลด MP3
-                    </button>
+                <div class="download-options" id="download-options">
+                    <!-- ปุ่มดาวน์โหลดจะแสดงที่นี่ -->
                 </div>
             </div>
         </section>
@@ -486,21 +549,21 @@
                 <div class="step-number">1</div>
                 <i class="fas fa-copy step-icon"></i>
                 <h3 class="step-title">คัดลอกลิงก์</h3>
-                <p>เปิดแอป TikTok และคัดลอกลิงก์วิดีโอที่ต้องการดาวน์โหลด</p>
+                <p>เปิดแอป TikTok และคัดลอกลิงก์วิดีโอหรือรูปภาพที่ต้องการดาวน์โหลด</p>
             </div>
             
             <div class="step">
                 <div class="step-number">2</div>
                 <i class="fas fa-paste step-icon"></i>
                 <h3 class="step-title">วางลิงก์</h3>
-                <p>วางลิงก์วิดีโอ TikTok ในช่องด้านบนของเว็บไซต์</p>
+                <p>วางลิงก์ TikTok ในช่องด้านบนของเว็บไซต์</p>
             </div>
             
             <div class="step">
                 <div class="step-number">3</div>
                 <i class="fas fa-download step-icon"></i>
                 <h3 class="step-title">ดาวน์โหลด</h3>
-                <p>กดปุ่มดาวน์โหลดและเลือกรูปแบบที่ต้องการ (MP4 หรือ MP3)</p>
+                <p>กดปุ่มดาวน์โหลดและเลือกรูปแบบที่ต้องการ (วิดีโอ, รูปภาพ หรือ MP3)</p>
             </div>
         </section>
         
@@ -508,19 +571,19 @@
             <div class="feature">
                 <i class="fas fa-bolt feature-icon"></i>
                 <h3 class="feature-title">รวดเร็วและมีประสิทธิภาพ</h3>
-                <p>ดาวน์โหลดวิดีโอ TikTok ได้อย่างรวดเร็วด้วยเทคโนโลยีล่าสุด</p>
+                <p>ดาวน์โหลดวิดีโอและรูปภาพจาก TikTok ได้อย่างรวดเร็วด้วยเทคโนโลยีล่าสุด</p>
             </div>
             
             <div class="feature">
-                <i class="fas fa-shield-alt feature-icon"></i>
-                <h3 class="feature-title">ปลอดภัยและเชื่อถือได้</h3>
-                <p>เราไม่เก็บข้อมูลวิดีโอหรือข้อมูลส่วนบุคคลของคุณ</p>
+                <i class="fas fa-images feature-icon"></i>
+                <h3 class="feature-title">รองรับทั้งวิดีโอและรูปภาพ</h3>
+                <p>ดาวน์โหลดได้ทั้งวิดีโอและรูปภาพจาก TikTok ในรูปแบบต่างๆ</p>
             </div>
             
             <div class="feature">
                 <i class="fas fa-thumbs-up feature-icon"></i>
                 <h3 class="feature-title">ใช้งานง่าย</h3>
-                <p>เพียงสามขั้นตอนง่ายๆ คุณก็สามารถดาวน์โหลดวิดีโอได้</p>
+                <p>เพียงสามขั้นตอนง่ายๆ คุณก็สามารถดาวน์โหลดเนื้อหาได้</p>
             </div>
         </section>
         
@@ -529,10 +592,10 @@
             
             <div class="faq-item">
                 <div class="faq-question">
-                    วิธีการดาวน์โหลดวิดีโอ TikTok? <i class="fas fa-chevron-down"></i>
+                    วิธีการดาวน์โหลดวิดีโอหรือรูปภาพจาก TikTok? <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>คัดลอกลิงก์วิดีโอจากแอป TikTok แล้ววางในช่องด้านบน จากนั้นคลิกปุ่ม "ดาวน์โหลด" และเลือกรูปแบบที่ต้องการ</p>
+                    <p>คัดลอกลิงก์วิดีโอหรือรูปภาพจากแอป TikTok แล้ววางในช่องด้านบน จากนั้นคลิกปุ่ม "ดาวน์โหลด" และเลือกรูปแบบที่ต้องการ</p>
                 </div>
             </div>
             
@@ -547,19 +610,19 @@
             
             <div class="faq-item">
                 <div class="faq-question">
-                    ดาวน์โหลดวิดีโอได้แบบไม่มีลายน้ำหรือไม่? <i class="fas fa-chevron-down"></i>
+                    ดาวน์โหลดวิดีโอหรือรูปภาพได้แบบไม่มีลายน้ำหรือไม่? <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>ได้! บริการของเราช่วยให้คุณดาวน์โหลดวิดีโอ TikTok โดยไม่มีลายน้ำ</p>
+                    <p>ได้! บริการของเราช่วยให้คุณดาวน์โหลดวิดีโอและรูปภาพจาก TikTok โดยไม่มีลายน้ำ</p>
                 </div>
             </div>
             
             <div class="faq-item">
                 <div class="faq-question">
-                    สามารถดาวน์โหลดบนมือถือได้หรือไม่? <i class="fas fa-chevron-down"></i>
+                    สามารถดาวน์โหลดรูปภาพได้หรือไม่? <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>ได้! บริการของเราสามารถใช้งานได้ทั้งบนคอมพิวเตอร์และมือถือ</p>
+                    <p>ได้! บริการของเราสามารถดาวน์โหลดได้ทั้งวิดีโอและรูปภาพจาก TikTok</p>
                 </div>
             </div>
         </section>
@@ -570,14 +633,15 @@
                 <a href="#">ข้อกำหนดการให้บริการ</a>
                 <a href="#">ติดต่อเรา</a>
             </div>
-            <p>© 2023 SnapTik - TikTok Video Downloader. All rights reserved.</p>
+            <p>© 2023 SnapTik - TikTok Video & Image Downloader. All rights reserved.</p>
             <p>Disclaimer: This service is not affiliated with TikTok Inc.</p>
         </footer>
     </div>
 
     <script>
-        // ตัวแปรเก็บข้อมูลวิดีโอ
-        let videoData = null;
+        // ตัวแปรเก็บข้อมูลเนื้อหา
+        let tiktokData = null;
+        let contentType = ''; // 'video', 'image', 'slideshow'
         
         // ตรวจสอบลิงก์
         function validateTikTokUrl(url) {
@@ -608,9 +672,18 @@
             const errorElement = document.getElementById('error-message');
             errorElement.textContent = message;
             errorElement.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
             
             // ซ่อน loading
             document.getElementById('loading').style.display = 'none';
+        }
+        
+        // ฟังก์ชันแสดงข้อความสำเร็จ
+        function showSuccess(message) {
+            const successElement = document.getElementById('success-message');
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
         }
         
         // ฟังก์ชันดาวน์โหลดไฟล์
@@ -622,6 +695,18 @@
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+        }
+        
+        // ฟังก์ชันดาวน์โหลดหลายไฟล์ (สำหรับสไลด์โชว์)
+        function downloadMultipleFiles(urls, prefix) {
+            urls.forEach((url, index) => {
+                const filename = `${prefix}_${index + 1}.jpg`;
+                setTimeout(() => {
+                    downloadFile(url, filename);
+                }, index * 500); // หน่วงเวลาเพื่อป้องกันการบล็อก
+            });
+            
+            showSuccess(`กำลังดาวน์โหลด ${urls.length} รูปภาพ...`);
         }
         
         // ฟังก์ชันเรียก API
@@ -640,10 +725,164 @@
         
         // ฟังก์ชันประมวลผลข้อมูลจาก API
         function processApiResponse(data) {
-            if (data.data && data.data.play) return data.data;
-            if (data.data && data.data.hdplay) return { play: data.data.hdplay };
-            if (data.play) return data;
+            if (data.data && data.data.play) {
+                // ตรวจสอบว่าเป็นวิดีโอหรือรูปภาพ
+                if (data.data.images && data.data.images.length > 0) {
+                    // เป็นสไลด์โชว์ (หลายรูปภาพ)
+                    contentType = 'slideshow';
+                    return {
+                        type: 'slideshow',
+                        author: data.data.author,
+                        title: data.data.title,
+                        images: data.data.images
+                    };
+                } else if (data.data.play) {
+                    // เป็นวิดีโอ
+                    contentType = 'video';
+                    return {
+                        type: 'video',
+                        author: data.data.author,
+                        title: data.data.title,
+                        play: data.data.play,
+                        hdplay: data.data.hdplay || data.data.play
+                    };
+                }
+            }
+            
             throw new Error('รูปแบบข้อมูลไม่ถูกต้องจาก API');
+        }
+        
+        // ฟังก์ชันแสดงผลลัพธ์
+        function displayResult(data) {
+            const resultContainer = document.getElementById('result-container');
+            const mediaPreview = document.getElementById('media-preview');
+            const downloadOptions = document.getElementById('download-options');
+            const contentBadge = document.getElementById('content-type-badge');
+            
+            // ล้างเนื้อหาเก่า
+            mediaPreview.innerHTML = '';
+            downloadOptions.innerHTML = '';
+            
+            // ตั้งค่าข้อมูลผู้ใช้
+            document.getElementById('author-avatar').src = data.author.avatar || 'https://via.placeholder.com/50';
+            document.getElementById('video-author').textContent = data.author.nickname || 'TikTok Author';
+            document.getElementById('video-description').textContent = data.title || 'เนื้อหาจาก TikTok';
+            
+            if (data.type === 'video') {
+                // แสดงวิดีโอ
+                contentBadge.className = 'content-type-badge badge-video';
+                contentBadge.innerHTML = '<i class="fas fa-video"></i> วิดีโอ';
+                
+                mediaPreview.innerHTML = '<video id="video-preview" controls></video>';
+                const videoPreview = document.getElementById('video-preview');
+                videoPreview.src = data.play;
+                videoPreview.load();
+                
+                // สร้างปุ่มดาวน์โหลดสำหรับวิดีโอ
+                downloadOptions.innerHTML = `
+                    <button class="download-option" id="download-mp4">
+                        <i class="fas fa-download"></i> ดาวน์โหลด MP4
+                    </button>
+                    <button class="download-option" id="download-hd">
+                        <i class="fas fa-hd"></i> ดาวน์โหลด HD
+                    </button>
+                    <button class="download-option mp3" id="download-mp3">
+                        <i class="fas fa-music"></i> ดาวน์โหลด MP3
+                    </button>
+                `;
+                
+                // เพิ่ม event listeners สำหรับปุ่มดาวน์โหลดวิดีโอ
+                document.getElementById('download-mp4').addEventListener('click', function() {
+                    downloadFile(data.play, `tiktok_video_${Date.now()}.mp4`);
+                });
+                
+                document.getElementById('download-hd').addEventListener('click', function() {
+                    downloadFile(data.hdplay, `tiktok_video_hd_${Date.now()}.mp4`);
+                });
+                
+                document.getElementById('download-mp3').addEventListener('click', async function() {
+                    const mp3Button = this;
+                    const originalText = mp3Button.innerHTML;
+                    
+                    mp3Button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังแปลงไฟล์...';
+                    mp3Button.disabled = true;
+                    
+                    try {
+                        const response = await fetch(`https://api.vevioz.com/api/button/mp3/${encodeURIComponent(data.play)}`);
+                        
+                        if (!response.ok) {
+                            throw new Error('การแปลงไฟล์เป็น MP3 ล้มเหลว');
+                        }
+                        
+                        const mp3Data = await response.json();
+                        
+                        if (!mp3Data.url) {
+                            throw new Error('ไม่พบลิงก์ดาวน์โหลด MP3');
+                        }
+                        
+                        downloadFile(mp3Data.url, `tiktok_audio_${Date.now()}.mp3`);
+                    } catch (error) {
+                        showError('ไม่สามารถแปลงไฟล์เป็น MP3 ได้: ' + error.message);
+                    } finally {
+                        mp3Button.innerHTML = originalText;
+                        mp3Button.disabled = false;
+                    }
+                });
+                
+            } else if (data.type === 'slideshow') {
+                // แสดงสไลด์โชว์ (หลายรูปภาพ)
+                contentBadge.className = 'content-type-badge badge-slideshow';
+                contentBadge.innerHTML = '<i class="fas fa-images"></i> สไลด์โชว์';
+                
+                mediaPreview.innerHTML = '<div class="image-gallery" id="image-gallery"></div>';
+                const imageGallery = document.getElementById('image-gallery');
+                
+                // แสดงภาพตัวอย่างแรก
+                if (data.images && data.images.length > 0) {
+                    data.images.forEach((imgUrl, index) => {
+                        if (index < 4) { // แสดงเพียง 4 ภาพแรกในกริด
+                            const img = document.createElement('img');
+                            img.src = imgUrl;
+                            img.className = 'gallery-image';
+                            img.alt = `Image ${index + 1}`;
+                            imageGallery.appendChild(img);
+                        }
+                    });
+                    
+                    if (data.images.length > 4) {
+                        const moreText = document.createElement('div');
+                        moreText.textContent = `+ ${data.images.length - 4} ภาพเพิ่มเติม`;
+                        moreText.style.textAlign = 'center';
+                        moreText.style.marginTop = '10px';
+                        moreText.style.color = '#666';
+                        mediaPreview.appendChild(moreText);
+                    }
+                }
+                
+                // สร้างปุ่มดาวน์โหลดสำหรับรูปภาพ
+                downloadOptions.innerHTML = `
+                    <button class="download-option images" id="download-all-images">
+                        <i class="fas fa-download"></i> ดาวน์โหลดทั้งหมด (${data.images.length} ภาพ)
+                    </button>
+                    <button class="download-option" id="download-first-image">
+                        <i class="fas fa-image"></i> ดาวน์โหลดภาพแรก
+                    </button>
+                `;
+                
+                // เพิ่ม event listeners สำหรับปุ่มดาวน์โหลดรูปภาพ
+                document.getElementById('download-all-images').addEventListener('click', function() {
+                    downloadMultipleFiles(data.images, `tiktok_slideshow_${Date.now()}`);
+                });
+                
+                document.getElementById('download-first-image').addEventListener('click', function() {
+                    if (data.images && data.images.length > 0) {
+                        downloadFile(data.images[0], `tiktok_image_${Date.now()}.jpg`);
+                    }
+                });
+            }
+            
+            // แสดงผลลัพธ์
+            resultContainer.style.display = 'block';
         }
         
         // Paste Button Handler
@@ -665,9 +904,10 @@
             
             // ซ่อนข้อความ error ที่อาจแสดงอยู่
             errorElement.style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
             
             if (!url) {
-                showError('กรุณาใส่ลิงก์วิดีโอ TikTok');
+                showError('กรุณาใส่ลิงก์วิดีโอหรือรูปภาพ TikTok');
                 return;
             }
             
@@ -685,74 +925,23 @@
                 const data = await fetchTikTokData(url);
                 
                 // ประมวลผลข้อมูล
-                videoData = processApiResponse(data);
+                tiktokData = processApiResponse(data);
                 
                 // แสดงผลลัพธ์
-                const videoPreview = document.getElementById('video-preview');
-                videoPreview.src = videoData.play;
-                videoPreview.load();
-                resultContainer.style.display = 'block';
+                displayResult(tiktokData);
                 
             } catch (error) {
                 console.error('Error:', error);
-                showError('เกิดข้อผิดพลาดในการดาวน์โหลดวิดีโอ: ' + error.message);
+                showError('เกิดข้อผิดพลาดในการดาวน์โหลดเนื้อหา: ' + error.message);
             } finally {
                 loading.style.display = 'none';
-            }
-        });
-        
-        // MP4 Download Button
-        document.getElementById('download-mp4').addEventListener('click', function() {
-            if (!videoData || !videoData.play) {
-                showError('ไม่พบวิดีโอสำหรับดาวน์โหลด');
-                return;
-            }
-            
-            const filename = `tiktok_video_${Date.now()}.mp4`;
-            downloadFile(videoData.play, filename);
-        });
-        
-        // MP3 Download Button
-        document.getElementById('download-mp3').addEventListener('click', async function() {
-            if (!videoData || !videoData.play) {
-                showError('ไม่พบวิดีโอสำหรับแปลงเป็น MP3');
-                return;
-            }
-            
-            const mp3Button = this;
-            const originalText = mp3Button.innerHTML;
-            
-            // แสดงสถานะกำลังโหลด
-            mp3Button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังแปลงไฟล์...';
-            mp3Button.disabled = true;
-            
-            try {
-                // ใช้บริการออนไลน์สำหรับแปลงวิดีโอเป็น MP3
-                const response = await fetch(`https://api.vevioz.com/api/button/mp3/${encodeURIComponent(videoData.play)}`);
-                
-                if (!response.ok) {
-                    throw new Error('การแปลงไฟล์เป็น MP3 ล้มเหลว');
-                }
-                
-                const data = await response.json();
-                
-                if (!data.url) {
-                    throw new Error('ไม่พบลิงก์ดาวน์โหลด MP3');
-                }
-                
-                downloadFile(data.url, `tiktok_audio_${Date.now()}.mp3`);
-            } catch (error) {
-                showError('ไม่สามารถแปลงไฟล์เป็น MP3 ได้: ' + error.message);
-            } finally {
-                // คืนค่าสถานะปุ่มเดิม
-                mp3Button.innerHTML = originalText;
-                mp3Button.disabled = false;
             }
         });
 
         // ตรวจสอบลิงก์เมื่อผู้ใช้พิมพ์
         document.getElementById('tiktok-url').addEventListener('input', function() {
             document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
         });
     </script>
 </body>
