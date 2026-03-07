@@ -1,200 +1,145 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="lo">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Friendship Quiz - Leaderboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500&display=swap" rel="stylesheet">
+    <title>ສູນພະເຄື່ອງລາວ - ແຫຼ່ງລວມພະແທ້</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #6366f1; --secondary: #ec4899; --bg: #f3f4f6; }
-        body { font-family: 'Kanit', sans-serif; background-color: var(--bg); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
-        #app { width: 100%; max-width: 450px; background: white; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); min-height: 100vh; }
-        .hidden { display: none; }
-        h2, h3 { text-align: center; color: var(--primary); }
-        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; text-decoration: none; display: block; text-align: center; box-sizing: border-box; }
-        .btn-secondary { background: var(--secondary); }
-        input[type="text"] { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; }
-        
-        /* สไตล์หน้าคะแนน */
-        .score-card { background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .rank { width: 30px; height: 30px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-right: 10px; }
-        .name { flex-grow: 1; font-weight: 500; }
-        .points { color: var(--secondary); font-weight: bold; font-size: 18px; }
-        
-        #options-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .image-option { border: 3px solid #f3f4f6; border-radius: 15px; overflow: hidden; cursor: pointer; text-align: center; }
-        .image-option img { width: 100%; height: 110px; object-fit: cover; }
-        .image-option span { display: block; padding: 8px; font-size: 13px; }
+        body { font-family: 'Noto Sans Lao', sans-serif; }
+        .filter-btn.active { background-color: #92400e; color: white; border-color: #92400e; }
+        /* ຕົບແຕ່ງເພີ່ມເຕີມເພື່ອຄວາມງາມ */
+        .amulet-card:hover { transform: translateY(-5px); transition: transform 0.3s ease; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800">
 
-<div id="app">
-    <div id="loading" style="text-align: center; margin-top: 50px;">กำลังโหลด...</div>
-
-    <div id="step-main" class="hidden">
-        <h2 id="title">ทายใจเพื่อน</h2>
-        <input type="text" id="user-name" placeholder="ชื่อของคุณ...">
-        <button class="btn" onclick="startQuiz()">เริ่มเล่น</button>
-    </div>
-
-    <div id="step-quiz" class="hidden">
-        <h3 id="question-text">คำถาม</h3>
-        <div id="options-container"></div>
-    </div>
-
-    <div id="step-scores" class="hidden">
-        <h2 id="score-title">อันดับคะแนน</h2>
-        <div id="leaderboard-list"></div>
-        <button class="btn" onclick="window.location.href=window.location.origin + window.location.pathname">สร้างควิซของตัวเอง</button>
-    </div>
-
-    <div id="step-share" class="hidden">
-        <h2>สร้างเสร็จแล้ว!</h2>
-        <p>ส่งลิงก์ให้เพื่อนทาย:</p>
-        <input type="text" id="share-url" readonly onclick="this.select()">
-        <button class="btn" onclick="copyLink()">คัดลอกลิงก์ส่งให้เพื่อน</button>
-        <button id="view-scores-btn" class="btn btn-secondary" style="margin-top:20px;">ดูหน้าคะแนนของเพื่อน</button>
-    </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDoc, doc, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDX3r9VBoCJ5XPPUDPIK5uLsXxJxE7gA98",
-  authDomain: "quizzes-451f5.firebaseapp.com",
-  projectId: "quizzes-451f5",
-  storageBucket: "quizzes-451f5.firebasestorage.app",
-  messagingSenderId: "595454143513",
-  appId: "1:595454143513:web:077ff17df9a43cc85f4e88",
-  measurementId: "G-Y6ZQPW54KN"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const questions = [
-        { q: "อาหารที่ฉันชอบที่สุด?", options: [
-            { t: "ชาบู", i: "https://images.unsplash.com/photo-1590577976322-3d2d6e21306d?w=200" },
-            { t: "ซูชิ", i: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=200" },
-            { t: "กะเพรา", i: "https://images.unsplash.com/photo-1552611052-33e04de081de?w=200" },
-            { t: "ส้มตำ", i: "https://images.unsplash.com/photo-1563833714765-490ca9fe15d7?w=200" }
-        ]}
-        // ... เพิ่มข้ออื่นๆ เหมือนเดิม ...
-    ];
-
-    let currentIdx = 0;
-    let selectedAnswers = [];
-    let urlParams = new URLSearchParams(window.location.search);
-    let quizId = urlParams.get("id");
-    let viewMode = urlParams.get("view");
-
-    window.onload = async () => {
-        document.getElementById('loading').classList.add('hidden');
-        
-        if (viewMode === "scores" && quizId) {
-            // โหมดแสดงคะแนนอย่างเดียว
-            showScores(quizId);
-        } else if (quizId) {
-            // โหมดเพื่อนมาตอบ
-            const snap = await getDoc(doc(db, "quizzes", quizId));
-            if (snap.exists()) {
-                document.getElementById('title').innerText = `ทายใจคุณ ${snap.data().ownerName}`;
-                document.getElementById('step-main').classList.remove('hidden');
-            }
-        } else {
-            // โหมดสร้างใหม่
-            document.getElementById('step-main').classList.remove('hidden');
-        }
-    };
-
-    window.startQuiz = () => {
-        const name = document.getElementById('user-name').value;
-        if (!name) return alert("ใส่ชื่อด้วยจ้า");
-        document.getElementById('step-main').classList.add('hidden');
-        document.getElementById('step-quiz').classList.remove('hidden');
-        renderQuestion();
-    };
-
-    function renderQuestion() {
-        const q = questions[currentIdx];
-        document.getElementById('question-text').innerText = q.q;
-        const container = document.getElementById('options-container');
-        container.innerHTML = '';
-        q.options.forEach((opt, i) => {
-            const div = document.createElement('div');
-            div.className = 'image-option';
-            div.innerHTML = `<img src="${opt.i}"><span>${opt.t}</span>`;
-            div.onclick = () => {
-                selectedAnswers.push(i);
-                currentIdx++;
-                if (currentIdx < questions.length) renderQuestion(); else finish();
-            };
-            container.appendChild(div);
-        });
-    }
-
-    async function finish() {
-        const name = document.getElementById('user-name').value;
-        if (!quizId) {
-            // บันทึกเฉลย (เจ้าของ)
-            const docRef = await addDoc(collection(db, "quizzes"), { ownerName: name, answers: selectedAnswers });
-            showSharePage(docRef.id);
-        } else {
-            // บันทึกคะแนน (เพื่อน)
-            const snap = await getDoc(doc(db, "quizzes", quizId));
-            let score = 0;
-            selectedAnswers.forEach((ans, i) => { if(ans === snap.data().answers[i]) score++; });
-            await addDoc(collection(db, "scores"), { quizId, friendName: name, score });
-            showScores(quizId); // ตอบเสร็จแล้วไปหน้าคะแนนเลย
-        }
-    }
-
-    function showSharePage(id) {
-        document.getElementById('step-quiz').classList.add('hidden');
-        document.getElementById('step-share').classList.remove('hidden');
-        const link = window.location.origin + window.location.pathname + "?id=" + id;
-        document.getElementById('share-url').value = link;
-        document.getElementById('view-scores-btn').onclick = () => {
-            window.location.href = link + "&view=scores";
-        };
-    }
-
-    function showScores(id) {
-        document.getElementById('step-main').classList.add('hidden');
-        document.getElementById('step-quiz').classList.add('hidden');
-        document.getElementById('step-scores').classList.remove('hidden');
-        
-        // ดึงข้อมูล Real-time (เรียงตามคะแนนมากไปน้อยแบบ Manual)
-        const q = query(collection(db, "scores"), where("quizId", "==", id));
-        onSnapshot(q, (snapshot) => {
-            const list = document.getElementById('leaderboard-list');
-            let scoresArr = [];
-            snapshot.forEach(doc => scoresArr.push(doc.data()));
+    <nav class="bg-stone-900 text-white p-3 shadow-xl sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center relative">
+            <div class="flex items-center">
+                <svg width="160" height="45" viewBox="0 0 250 60" xmlns="http://www.w3.org/2000/svg">
+                    <text x="10" y="45" font-family="'Noto Sans Lao', sans-serif" font-weight="bold" font-size="42" fill="#fbbf24">ສູນພະເຄື່ອງ</text>
+                    <path d="M10 55 L220 55" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
             
-            // เรียงลำดับคะแนนในฝั่ง Client (ไม่ต้องรอสร้าง Index ใน Firebase)
-            scoresArr.sort((a, b) => b.score - a.score);
+            <button id="menuBtn" class="md:hidden p-2 text-amber-400 outline-none">
+                <svg id="menuIcon" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
 
-            list.innerHTML = scoresArr.length ? "" : "<p style='text-align:center;'>ยังไม่มีคะแนน...</p>";
-            scoresArr.forEach((data, index) => {
-                list.innerHTML += `
-                    <div class="score-card">
-                        <div class="rank">${index + 1}</div>
-                        <div class="name">${data.friendName}</div>
-                        <div class="points">${data.score} แต้ม</div>
-                    </div>`;
-            });
+            <ul id="menuList" class="hidden absolute top-full left-0 w-full bg-stone-900 flex-col p-6 space-y-4 md:static md:flex md:flex-row md:w-auto md:p-0 md:space-y-0 md:space-x-8 font-medium border-t border-stone-800 md:border-none text-center shadow-2xl md:shadow-none">
+                <li><a href="index.html" class="block py-2 hover:text-amber-400 transition">ໜ້າຫຼັກ</a></li>
+                <li><a href="pawn.html" class="block py-2 hover:text-amber-400 transition">ຮັບຈຳນຳພະເຄື່ອງ</a></li>
+                <li><a href="#" class="block py-2 hover:text-amber-400 transition">ຕິດຕໍ່ພວກເຮົາ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="bg-white py-12 border-b border-gray-200">
+        <div class="container mx-auto text-center px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-stone-800 mb-4">ຄົ້ນຫາພະເຄື່ອງທີ່ທ່ານສົນໃຈ</h2>
+            <p class="text-gray-500 mb-8">ຮັບປະກັນພະແທ້ ມາດຕະຖານວົງການ</p>
+            
+            <div class="max-w-2xl mx-auto space-y-6">
+                <input type="text" id="searchInput" onkeyup="filterAmulets()" 
+                    placeholder="ພິມຊື່ພະ, ລຸ້ນ, ຫຼື ເກຈິອາຈານ..." 
+                    class="w-full p-4 rounded-2xl border-2 border-stone-100 focus:border-amber-600 outline-none shadow-sm text-lg text-center">
+                
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button onclick="setCategory('all')" class="filter-btn active px-5 py-2 rounded-full border-2 border-stone-200 font-bold transition">ທັງໝົດ</button>
+                    <button onclick="setCategory('ພະຫຼຽນ')" class="filter-btn px-5 py-2 rounded-full border-2 border-stone-200 font-bold transition">ພະຫຼຽນ</button>
+                    <button onclick="setCategory('ພະເນື້ອຜົງ')" class="filter-btn px-5 py-2 rounded-full border-2 border-stone-200 font-bold transition">ພະເນື້ອຜົງ</button>
+                    <button onclick="setCategory('ເຄື່ອງລາງ')" class="filter-btn px-5 py-2 rounded-full border-2 border-stone-200 font-bold transition">ເຄື່ອງລາງ</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto my-12 p-4">
+        <div id="amuletGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            <div class="amulet-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" data-category="ເຄື່ອງລາງ">
+                <img src="1.png" alt="ພະພິຄະເນດ ເນື້ອທອງແດງ" class="w-full h-72 object-cover">
+                <div class="p-5">
+                    <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded">ພະພິຄະເນດ</span>
+                    <h3 class="amulet-name text-xl font-bold mt-3">ລອຍອົງ ພະສີໂຫ ພະພິຄະເນດ
+                        ອາຈານບຸນຈອນລຸ້ນ1
+                        ເທບພະເຈົ້າແຫ່ງຄວາມໂຊກລາບ ແລະ ການຂໍພອນ</h3>
+                    <p class="text-gray-500 text-sm mt-1">ເນື້ອທອງແດງ ສ້າງ 499 ອົງ</p>
+                    <div class="mt-5 flex justify-between items-center">
+                        <span class="text-xl font-bold text-red-600 uppercase">ສອບຖາມ</span>
+                        <a href="https://wa.me/85620XXXXXXXX" class="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-green-700 transition">WhatsApp</a>
+                    </div>
+                </div>
+            </div>
+
+            </div>
+
+        <div id="noResults" class="hidden text-center py-20">
+            <p class="text-xl text-gray-400">ບໍ່ພົບຂໍ້ມູນພະເຄື່ອງທີ່ທ່ານຄົ້ນຫາ</p>
+        </div>
+    </main>
+
+    <footer class="bg-stone-900 text-stone-500 py-10 text-center">
+        <p class="text-stone-300 font-bold mb-2">ສູນພະເຄື່ອງລາວ</p>
+        <p class="text-sm px-4">ບໍລິການດ້ວຍຄວາມຈິງໃຈ ຮັບປະກັນພະແທ້ ມາດຕະຖານວົງການ</p>
+    </footer>
+
+    <script>
+        // --- ລະບົບເປີດ-ປິດ ເມນູມືຖື ---
+        const menuBtn = document.getElementById('menuBtn');
+        const menuList = document.getElementById('menuList');
+
+        menuBtn.addEventListener('click', () => {
+            menuList.classList.toggle('hidden');
+            menuList.classList.toggle('flex');
         });
-    }
 
-    window.copyLink = () => {
-        const input = document.getElementById('share-url');
-        input.select();
-        navigator.clipboard.writeText(input.value);
-        alert("คัดลอกลิงก์แล้ว!");
-    };
-</script>
+        // --- ລະບົບຄົ້ນຫາ ແລະ ກອງໝວດໝູ່ ---
+        let currentCategory = 'all';
+
+        function filterAmulets() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.amulet-card');
+            let count = 0;
+
+            cards.forEach(card => {
+                const name = card.querySelector('.amulet-name').innerText.toLowerCase();
+                const category = card.getAttribute('data-category');
+                
+                const matchesSearch = name.includes(searchText);
+                const matchesCategory = (currentCategory === 'all' || category === currentCategory);
+
+                if (matchesSearch && matchesCategory) {
+                    card.style.display = "block";
+                    count++;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            document.getElementById('noResults').style.display = (count === 0) ? "block" : "none";
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.innerText.toLowerCase() === cat.toLowerCase() || (cat === 'all' && btn.innerText === 'ທັງໝົດ')) {
+                    btn.classList.add('active');
+                }
+            });
+            filterAmulets();
+            
+            // ປິດເມນູມືຖືອັດຕະໂນມັດເມື່ອກົດເລືອກ
+            if (window.innerWidth < 768) {
+                menuList.classList.add('hidden');
+                menuList.classList.remove('flex');
+            }
+        }
+    </script>
 </body>
 </html>
