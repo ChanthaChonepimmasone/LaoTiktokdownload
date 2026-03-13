@@ -3,143 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ສູນພະເຄື່ອງລາວ - ແຫຼ່ງລວມພະແທ້</title>
+    <title>ປະຫວັດ ແລະ ວັດຖຸມຸງຄຸນ ຫຼວງປູ່ສຸວັນຄຳ ຈັນທະသာໂຣ</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans Lao', sans-serif; }
-        .filter-btn.active { background-color: #92400e; color: white; border-color: #92400e; }
-        /* ຕົບແຕ່ງເພີ່ມເຕີມເພື່ອຄວາມງາມ */
-        .amulet-card:hover { transform: translateY(-5px); transition: transform 0.3s ease; }
+        body { font-family: 'Noto Sans Lao', sans-serif; background-color: #fcfaf7; scroll-behavior: smooth; }
+        .lao-gradient { background: linear-gradient(135deg, #1c1917 0%, #44403c 100%); }
+        .amulet-card { transition: all 0.3s ease; position: relative; border: 1px solid #e7e5e4; display: flex; flex-direction: column; height: 100%; }
+        .amulet-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .img-container { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; padding: 8px; }
+        .img-full { width: 100%; height: 100%; object-fit: contain; }
+        /* ປັບແຕ່ງ scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c2a172; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="text-stone-800">
 
-    <nav class="bg-stone-900 text-white p-3 shadow-xl sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center relative">
-            <div class="flex items-center">
-                <svg width="160" height="45" viewBox="0 0 250 60" xmlns="http://www.w3.org/2000/svg">
-                    <text x="10" y="45" font-family="'Noto Sans Lao', sans-serif" font-weight="bold" font-size="42" fill="#fbbf24">ສູນພະເຄື່ອງ</text>
-                    <path d="M10 55 L220 55" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
-                </svg>
+    <nav class="bg-stone-900/95 text-white p-3 sticky top-0 z-50 backdrop-blur-sm border-b border-amber-900/20">
+        <div class="container mx-auto flex justify-between items-center px-2">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center border border-amber-400">
+                    <span class="text-white font-bold text-lg">ສ</span>
+                </div>
+                <span class="text-lg font-bold text-amber-400 tracking-tight">ສູນພະເຄື່ອງລາວ</span>
             </div>
-            
-            <button id="menuBtn" class="md:hidden p-2 text-amber-400 outline-none">
-                <svg id="menuIcon" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                </svg>
-            </button>
-
-            <ul id="menuList" class="hidden absolute top-full left-0 w-full bg-stone-900 flex-col p-6 space-y-4 md:static md:flex md:flex-row md:w-auto md:p-0 md:space-y-0 md:space-x-8 font-medium border-t border-stone-800 md:border-none text-center shadow-2xl md:shadow-none">
-                <li><a href="index.html" class="block py-2 hover:text-amber-400 transition">ໜ້າຫຼັກ</a></li>
-                <li><a href="pawn.html" class="block py-2 hover:text-amber-400 transition">ຮັບຈຳນຳພະເຄື່ອງ</a></li>
-                <li><a href="#" class="block py-2 hover:text-amber-400 transition">ຕິດຕໍ່ພວກເຮົາ</a></li>
+            <div class="md:hidden text-amber-400">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </div>
+            <ul class="hidden md:flex space-x-6 text-xs uppercase tracking-widest">
+                <li><a href="#history" class="hover:text-amber-400">ປະຫວັດ</a></li>
+                <li><a href="#amulets" class="hover:text-amber-400">ບູຊາ</a></li>
+                <li><a href="#contact" class="hover:text-amber-400">ຕິດຕໍ່</a></li>
             </ul>
         </div>
     </nav>
 
-    <header class="bg-white py-12 border-b border-gray-200">
-        <div class="container mx-auto text-center px-4">
-            <h2 class="text-3xl md:text-4xl font-bold text-stone-800 mb-4">ຄົ້ນຫາພະເຄື່ອງທີ່ທ່ານສົນໃຈ</h2>
-            <p class="text-gray-500 mb-8">ຮັບປະກັນພະແທ້ ມາດຕະຖານວົງການ</p>
-            
-            <div class="max-w-2xl mx-auto space-y-6">
-                <input type="text" id="searchInput" onkeyup="filterAmulets()" 
-                    placeholder="ພິມຊື່ພະ, ລຸ້ນ, ຫຼື ເກຈິອາຈານ..." 
-                    class="w-full p-4 rounded-2xl border-2 border-stone-100 focus:border-amber-600 outline-none shadow-sm text-lg text-center">
-                
-                <div class="flex flex-wrap justify-center gap-2">
-                    <button onclick="setCategory('all')" class="filter-btn active px-5 py-2 rounded-full border-2 border-stone-200 font-bold transition">ທັງໝົດ</button>
-                    <button onclick="setCategory('ພະຫຼຽນ')" class="filter-btn px-5 py-2 rounded-full border-2 border-stone-200 font-bold transition">ພະຫຼຽນ</button>
-                    <button onclick="setCategory('ພະເນື້ອຜົງ')" class="filter-btn px-5 py-2 rounded-full border-2 border-stone-200 font-bold transition">ພະເນື້ອຜົງ</button>
-                    <button onclick="setCategory('ເຄື່ອງລາງ')" class="filter-btn px-5 py-2 rounded-full border-2 border-stone-200 font-bold transition">ເຄື່ອງລາງ</button>
-                </div>
-            </div>
+    <header class="lao-gradient text-white py-12 px-4 text-center">
+        <div class="container mx-auto">
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 text-amber-400">ຫຼວງປູ່ສຸວັນຄຳ ຈັນທະສາໂຣ</h1>
+            <p class="text-stone-300 text-sm md:text-lg max-w-xl mx-auto font-light italic">
+                "ພະອະຣິຍະສົງຄ໌ບັງບົດ ຜູ້ມີເມດຕາທຳແຫ່ງ ພູເຂົາຄວາຍ"
+            </p>
         </div>
     </header>
 
-    <main class="container mx-auto my-12 p-4">
-        <div id="amuletGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            
-            <div class="amulet-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" data-category="ເຄື່ອງລາງ">
-                <img src="1.png" alt="ພະພິຄະເນດ ເນື້ອທອງແດງ" class="w-full h-72 object-cover">
-                <div class="p-5">
-                    <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded">ພະພິຄະເນດ</span>
-                    <h3 class="amulet-name text-xl font-bold mt-3">ລອຍອົງ ພະສີໂຫ ພະພິຄະເນດ
-                        ອາຈານບຸນຈອນລຸ້ນ1
-                        ເທບພະເຈົ້າແຫ່ງຄວາມໂຊກລາບ ແລະ ການຂໍພອນ</h3>
-                    <p class="text-gray-500 text-sm mt-1">ເນື້ອທອງແດງ ສ້າງ 499 ອົງ</p>
-                    <div class="mt-5 flex justify-between items-center">
-                        <span class="text-xl font-bold text-red-600 uppercase">ສອບຖາມ</span>
-                        <a href="https://wa.me/85620XXXXXXXX" class="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-green-700 transition">WhatsApp</a>
-                    </div>
+    <section id="history" class="container mx-auto py-10 px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="space-y-3">
+                <img src="6.jpg" alt="ຫຼວງປູ່" class="rounded-2xl shadow-xl w-full object-cover border-2 border-white">
+                <div class="grid grid-cols-2 gap-2">
+                    <img src="2.jpg" class="rounded-xl shadow w-full h-32 object-cover border border-white">
+                    <img src="4.jpg" class="rounded-xl shadow w-full h-32 object-cover border border-white">
                 </div>
             </div>
 
+            <div class="space-y-5 bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+                <h2 class="text-3xl font-bold text-stone-900 border-l-8 border-amber-600 pl-4 uppercase tracking-tighter">ປະຫວັດ ແລະ ຕຳນານ</h2>
+
+               
+
+                <div class="prose prose-stone max-w-none text-stone-600 leading-relaxed space-y-4">
+
+                    <p class="font-bold text-stone-800 text-lg underline decoration-amber-500">ພຣະອະຣິຍະສົງເໜືອກາລະເວລາ</p>
+
+                    <p>ໃນດິນແດນແຫ່ງສັດທາຂອງສອງຝັ່ງຂອງ, ຊື່ຂອງ <strong>ຫຼວງປູ່ສຸວັນຄຳ ຈັນທະສາໂຣ</strong> ປາກົດຂຶ້ນພ້ອມກັບເລື່ອງລາວອັນເປັນປິດສະໜາ. ເພິ່ນຖືກກ່າວຂານວ່າເປັນ "ພຣະບັງບົດ" ຜູ້ມີບາລະມີທັມອັນລຶກລັບແຫ່ງພູເຂົາຄວາຍ.</p>
+
+                   
+
+                    <h4 class="font-bold text-stone-900 mt-4">1. ປິດສະໜາແຫ່ງຊາດກຳເນີດ ແລະ ອາຍຸ</h4>
+
+                    <p>ບໍ່ມີຜູ້ໃດຢືນຢັນໄດ້ຊັດເຈນວ່າເພິ່ນເກີດຢູ່ໃສ ຫຼື ມີອາຍຸເທົ່າໃດ. ຍາດໂຍມທີ່ຂາບໄຫວ້ເພິ່ນມາຫຼາຍສິບປີ ຕ່າງບອກວ່າຮູບລັກຂອງເພິ່ນຍັງຄືເກົ່າບໍ່ປ່ຽນແປງ ເໝືອນຜູ້ບັນລຸວິຊາກາຍສິດ ຢູ່ເໜືອກົດເກນທຳມະຊາດ.</p>
+
+
+
+                    <h4 class="font-bold text-stone-900 mt-4">2. ຮ່າງໃໝ່... ຈິດເກົ່າ</h4>
+
+                    <p>ມີຄວາມເຊື່ອວ່າ ເພິ່ນຄືການແບ່ງກາຍ ຫຼື ເປັນຮ່າງໃໝ່ຂອງ <strong>"ຫຼວງປູ່ເທບໂລກອຸດອນ"</strong> ທີ່ກັບມາເພື່ອສືບທອດພຸດທະສາດສະໜາໃຫ້ຄົບ 5,000 ປີ ດ້ວຍພະລັງຈິດທີ່ກ້າແກ່ນ ແລະ ວິຖີການບຳເພັນທີ່ລຶກລັບ.</p>
+
+
+
+                    <h4 class="font-bold text-stone-900 mt-4">3. ວິຖີແຫ່ງຄວາມສັກສິດ</h4>
+
+                    <p>ເພິ່ນມັກຈຳພັນສາແບບສະງົບວິເວກຕາມຖ້ຳ ແລະ ປ່າເລິກ. ວັດຖຸມົງຄຸນທີ່ເພິ່ນອະທິຖານຈິດໃຫ້ ຖືເປັນຂອງມີຄ່າຫາຍາກ ເພາະເຕັມໄປດ້ວຍພະລັງປ້ອງກັນໄພ ແລະ ເສີມໂຊກລາບສົມປາຖະໜາ.</p>
+
+                </div>
+
+
+
+                <div class="p-6 bg-amber-50 rounded-2xl border border-amber-200 italic text-amber-900 shadow-inner mt-6">
+
+                    "ການມີພຣະຢູ່ກັບຕົວ ຄືການມີທັມຢູ່ກັບໃຈ. ຫ້ອຍພຣະເຄື່ອງເພື່ອເຕືອນສະຕິໃຫ້ເຮັດແຕ່ຄວາມດີ."
+
+                </div>
+
             </div>
 
-        <div id="noResults" class="hidden text-center py-20">
-            <p class="text-xl text-gray-400">ບໍ່ພົບຂໍ້ມູນພະເຄື່ອງທີ່ທ່ານຄົ້ນຫາ</p>
         </div>
-    </main>
 
-    <footer class="bg-stone-900 text-stone-500 py-10 text-center">
-        <p class="text-stone-300 font-bold mb-2">ສູນພະເຄື່ອງລາວ</p>
-        <p class="text-sm px-4">ບໍລິການດ້ວຍຄວາມຈິງໃຈ ຮັບປະກັນພະແທ້ ມາດຕະຖານວົງການ</p>
+    </section>
+
+    <section id="amulets" class="bg-stone-100 py-12 px-4 border-t border-stone-200">
+        <div class="container mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-stone-900 mb-2">ວັດຖຸມຸງຄຸນ</h2>
+                <div class="w-16 h-1 bg-amber-600 mx-auto mb-2"></div>
+                <p class="text-stone-500 text-xs italic">"ພະແທ້ ຈາກບາລະມີຫຼວງປູ່ ສົມປາຖະໜາ"</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+                
+                <div class="amulet-card bg-white rounded-xl overflow-hidden shadow-sm">
+                    <div class="img-container">
+                        <img src="l1.jpg" alt="ຫຼຽນສົມປາດຖະໜາ" class="img-full transform hover:scale-105 transition">
+                    </div>
+                    <div class="p-3 flex flex-col flex-grow">
+                        <span class="text-[8px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full w-max uppercase">ຍອດນິຍົມ</span>
+                        <h3 class="text-sm font-bold mt-2 mb-1 text-stone-900 line-clamp-1">ຫຼຽນສົມປາດຖະໜາ 2</h3>
+                        <p class="text-stone-400 text-[10px] mb-3">ເນື້ອທອງທິບ</p>
+                        <div class="mt-auto border-t pt-3 flex flex-col gap-2">
+                            <span class="text-sm font-bold text-amber-600">₭200,000</span>
+                            <a href="https://wa.me/8562029988148" class="bg-green-600 text-white py-1.5 rounded-lg text-[11px] font-bold text-center hover:bg-green-700 transition">ຕິດຕໍ່ບູຊາ (WhatsApp)</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="amulet-card bg-white rounded-xl overflow-hidden shadow-sm">
+                    <div class="img-container">
+                        <img src="l2.png" alt="ຫຼຽນສົມປາດຖະໜາ" class="img-full transform hover:scale-105 transition">
+                    </div>
+                    <div class="p-3 flex flex-col flex-grow">
+                        <span class="text-[8px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full w-max uppercase">ເນື້ອຕະກວ່າ</span>
+                        <h3 class="text-sm font-bold mt-2 mb-1 text-stone-900 line-clamp-1">ຫຼຽນສົມປາດຖະໜາ 2</h3>
+                        <p class="text-stone-400 text-[10px] mb-3">ເນື້ອຕະກວ່າ</p>
+                        <div class="mt-auto border-t pt-3 flex flex-col gap-2">
+                            <span class="text-sm font-bold text-amber-600">₭ 200,000</span>
+                            <a href="https://wa.me/8562029988148" class="bg-green-600 text-white py-1.5 rounded-lg text-[11px] font-bold text-center hover:bg-green-700 transition">ຕິດຕໍ່ບູຊາ (WhatsApp)</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="bg-stone-900 text-stone-400 py-10 px-4">
+        <div class="container mx-auto text-center border-b border-stone-800 pb-8 mb-8">
+            <h2 class="text-white text-xl font-bold mb-6 uppercase tracking-widest">ຕິດຕໍ່ສອບຖາມ</h2>
+            <div class="flex flex-col md:flex-row justify-center gap-4 text-xs">
+                <div class="bg-stone-800 p-4 rounded-xl flex-1">
+                    <p class="text-amber-500 font-bold mb-1">📍 ວັດຖ້ຳພະ</p>
+                    <p class="text-stone-300">ພູເຂົາຄວາຍ</p>
+                </div>
+                <div class="bg-stone-800 p-4 rounded-xl flex-1 border border-amber-900/30">
+                    <p class="text-amber-500 font-bold mb-1">📞 WhatsApp</p>
+                    <p class="text-stone-300">020 29988148</p>
+                </div>
+            </div>
+        </div>
+        <p class="text-center text-[9px] uppercase tracking-[0.3em] text-stone-600">
+            © 2026 Lao Amulet Center - ບາລະມີຫຼວງປູ່ສຸວັນຄຳ
+        </p>
     </footer>
 
-    <script>
-        // --- ລະບົບເປີດ-ປິດ ເມນູມືຖື ---
-        const menuBtn = document.getElementById('menuBtn');
-        const menuList = document.getElementById('menuList');
-
-        menuBtn.addEventListener('click', () => {
-            menuList.classList.toggle('hidden');
-            menuList.classList.toggle('flex');
-        });
-
-        // --- ລະບົບຄົ້ນຫາ ແລະ ກອງໝວດໝູ່ ---
-        let currentCategory = 'all';
-
-        function filterAmulets() {
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.amulet-card');
-            let count = 0;
-
-            cards.forEach(card => {
-                const name = card.querySelector('.amulet-name').innerText.toLowerCase();
-                const category = card.getAttribute('data-category');
-                
-                const matchesSearch = name.includes(searchText);
-                const matchesCategory = (currentCategory === 'all' || category === currentCategory);
-
-                if (matchesSearch && matchesCategory) {
-                    card.style.display = "block";
-                    count++;
-                } else {
-                    card.style.display = "none";
-                }
-            });
-
-            document.getElementById('noResults').style.display = (count === 0) ? "block" : "none";
-        }
-
-        function setCategory(cat) {
-            currentCategory = cat;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.innerText.toLowerCase() === cat.toLowerCase() || (cat === 'all' && btn.innerText === 'ທັງໝົດ')) {
-                    btn.classList.add('active');
-                }
-            });
-            filterAmulets();
-            
-            // ປິດເມນູມືຖືອັດຕະໂນມັດເມື່ອກົດເລືອກ
-            if (window.innerWidth < 768) {
-                menuList.classList.add('hidden');
-                menuList.classList.remove('flex');
-            }
-        }
-    </script>
 </body>
 </html>
