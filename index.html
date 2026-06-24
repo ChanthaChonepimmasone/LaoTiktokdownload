@@ -2,180 +2,270 @@
 <html lang="lo">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ປະຫວັດ ແລະ ວັດຖຸມຸງຄຸນ ຫຼວງປູ່ສຸວັນຄຳ ຈັນທະສາໂຣ</title>
-<meta name="title" content="ປະຫວັດ ແລະ ວັດຖຸມຸງຄຸນ ຫຼວງປູ່ສຸວັນຄຳ ຈັນທະသာໂຣ">
-<meta name="description" content="ບູຊາພະເຄື່ອງແທ້ ຫຼວງປູ່ສຸວັນຄຳ ຈັນທະသာໂຣ ວັດປ່າພະທຳເທບພະວົງ ພູເຂົາຄວາຍ. ສົມປາດຖະໜາ ເມດຕາມະຫານິຍົມ.">
-
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://chanthachonepimmasone.github.io/LaoTiktokdownload/">
-<meta property="og:title" content="ປະຫວັດ ແລະ ວັດຖຸມຸງຄຸນ ຫຼວງປູ່ສຸວັນຄຳ">
-<meta property="og:description" content="ບູຊາພະເຄື່ອງແທ້ ຫຼວງປູ່ສຸວັນຄຳ ສົມປາດຖະໜາ ເມດຕາມະຫານິຍົມ.">
-<meta property="og:image" content="https://chanthachonepimmasone.github.io/LaoTiktokdownload/2.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ບັນຊີລາຍຮັບ - ລາຍຈ່າຍ (Mobile Friendly)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Phetsarath&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans Lao', sans-serif; background-color: #fcfaf7; scroll-behavior: smooth; }
-        .lao-gradient { background: linear-gradient(135deg, #1c1917 0%, #44403c 100%); }
-        .amulet-card { transition: all 0.3s ease; position: relative; border: 1px solid #e7e5e4; display: flex; flex-direction: column; height: 100%; }
-        .amulet-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .img-container { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; padding: 8px; }
-        .img-full { width: 100%; height: 100%; object-fit: contain; }
-        /* ປັບແຕ່ງ scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #c2a172; border-radius: 10px; }
+        body { font-family: 'Phetsarath', sans-serif; -webkit-tap-highlight-color: transparent; }
+        /* ປັບແຕ່ງໃຫ້ມີການອານິເມຊັ່ນເວລາຟອມເດັ້ງຂຶ້ນມາ */
+        .bottom-sheet { transition: transform 0.3s ease-in-out; transform: translateY(100%); }
+        .bottom-sheet.open { transform: translateY(0); }
     </style>
 </head>
-<body class="text-stone-800">
+<body class="bg-gray-50 min-h-screen pb-24">
 
-    <nav class="bg-stone-900/95 text-white p-3 sticky top-0 z-50 backdrop-blur-sm border-b border-amber-900/20">
-        <div class="container mx-auto flex justify-between items-center px-2">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center border border-amber-400">
-                    <span class="text-white font-bold text-lg">ສ</span>
-                </div>
-                <span class="text-lg font-bold text-amber-400 tracking-tight">ສູນພະເຄື່ອງລາວ</span>
-            </div>
-            <div class="md:hidden text-amber-400">
-                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-            </div>
-            <ul class="hidden md:flex space-x-6 text-xs uppercase tracking-widest">
-                <li><a href="#history" class="hover:text-amber-400">ປະຫວັດ</a></li>
-                <li><a href="#amulets" class="hover:text-amber-400">ບູຊາ</a></li>
-                <li><a href="#contact" class="hover:text-amber-400">ຕິດຕໍ່</a></li>
-            </ul>
+    <div class="bg-white shadow-sm p-4 sticky top-0 z-10 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">📊 ບັນຊີລາຍຮັບ - ລາຍຈ່າຍ</h1>
+        <div class="flex gap-2">
+            <button onclick="exportData()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs font-bold transition">💾 Backup</button>
+            <label class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+                📥 Import
+                <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
+            </label>
         </div>
-    </nav>
+    </div>
 
-    <header class="lao-gradient text-white py-12 px-4 text-center">
-        <div class="container mx-auto">
-            <h1 class="text-3xl md:text-5xl font-bold mb-4 text-amber-400">ຫຼວງປູ່ສຸວັນຄຳ ຈັນທະສາໂຣ</h1>
-            <p class="text-stone-300 text-sm md:text-lg max-w-xl mx-auto font-light italic">
-                "ພະອະຣິຍະສົງຄ໌ບັງບົດ ຜູ້ມີເມດຕາທຳແຫ່ງ ພູເຂົາຄວາຍ"
-            </p>
-        </div>
-    </header>
-
-    <section id="history" class="container mx-auto py-10 px-4">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="space-y-3">
-                <img src="6.jpg" alt="ຫຼວງປູ່" class="rounded-2xl shadow-xl w-full object-cover border-2 border-white">
-                <div class="grid grid-cols-2 gap-2">
-                    <img src="2.jpg" class="rounded-xl shadow w-full h-32 object-cover border border-white">
-                    <img src="4.jpg" class="rounded-xl shadow w-full h-32 object-cover border border-white">
+    <div class="max-w-md mx-auto p-4 space-y-4">
+        
+        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-md">
+            <p class="text-white/80 text-xs font-medium mb-1">ຍອດເຫຼືອຄົງເຫຼືອທັງໝົດ</p>
+            <p id="total-balance" class="text-3xl font-bold mb-4">0 ກີບ</p>
+            
+            <div class="grid grid-cols-2 gap-2 pt-3 border-t border-white/20">
+                <div>
+                    <p class="text-white/70 text-[11px]">📈 ລາຍຮັບ (ຊ່ວງນີ້)</p>
+                    <p id="total-income" class="text-base font-bold text-green-300">0 ກີບ</p>
+                </div>
+                <div class="border-l border-white/20 pl-3">
+                    <p class="text-white/70 text-[11px]">📉 ລາຍຈ່າຍ (ຊ່ວງນີ້)</p>
+                    <p id="total-expense" class="text-base font-bold text-red-300">0 ກີບ</p>
                 </div>
             </div>
-
-            <div class="space-y-5 bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
-                <h2 class="text-3xl font-bold text-stone-900 border-l-8 border-amber-600 pl-4 uppercase tracking-tighter">ປະຫວັດ ແລະ ຕຳນານ</h2>
-
-               
-
-                <div class="prose prose-stone max-w-none text-stone-600 leading-relaxed space-y-4">
-
-                    <p class="font-bold text-stone-800 text-lg underline decoration-amber-500">ພຣະອະຣິຍະສົງເໜືອກາລະເວລາ</p>
-
-                    <p>ໃນດິນແດນແຫ່ງສັດທາຂອງສອງຝັ່ງຂອງ, ຊື່ຂອງ <strong>ຫຼວງປູ່ສຸວັນຄຳ ຈັນທະສາໂຣ</strong> ປາກົດຂຶ້ນພ້ອມກັບເລື່ອງລາວອັນເປັນປິດສະໜາ. ເພິ່ນຖືກກ່າວຂານວ່າເປັນ "ພຣະບັງບົດ" ຜູ້ມີບາລະມີທັມອັນລຶກລັບແຫ່ງພູເຂົາຄວາຍ.</p>
-
-                   
-
-                    <h4 class="font-bold text-stone-900 mt-4">1. ປິດສະໜາແຫ່ງຊາດກຳເນີດ ແລະ ອາຍຸ</h4>
-
-                    <p>ບໍ່ມີຜູ້ໃດຢືນຢັນໄດ້ຊັດເຈນວ່າເພິ່ນເກີດຢູ່ໃສ ຫຼື ມີອາຍຸເທົ່າໃດ. ຍາດໂຍມທີ່ຂາບໄຫວ້ເພິ່ນມາຫຼາຍສິບປີ ຕ່າງບອກວ່າຮູບລັກຂອງເພິ່ນຍັງຄືເກົ່າບໍ່ປ່ຽນແປງ ເໝືອນຜູ້ບັນລຸວິຊາກາຍສິດ ຢູ່ເໜືອກົດເກນທຳມະຊາດ.</p>
-
-
-
-                    <h4 class="font-bold text-stone-900 mt-4">2. ຮ່າງໃໝ່... ຈິດເກົ່າ</h4>
-
-                    <p>ມີຄວາມເຊື່ອວ່າ ເພິ່ນຄືການແບ່ງກາຍ ຫຼື ເປັນຮ່າງໃໝ່ຂອງ <strong>"ຫຼວງປູ່ເທບໂລກອຸດອນ"</strong> ທີ່ກັບມາເພື່ອສືບທອດພຸດທະສາດສະໜາໃຫ້ຄົບ 5,000 ປີ ດ້ວຍພະລັງຈິດທີ່ກ້າແກ່ນ ແລະ ວິຖີການບຳເພັນທີ່ລຶກລັບ.</p>
-
-
-
-                    <h4 class="font-bold text-stone-900 mt-4">3. ວິຖີແຫ່ງຄວາມສັກສິດ</h4>
-
-                    <p>ເພິ່ນມັກຈຳພັນສາແບບສະງົບວິເວກຕາມຖ້ຳ ແລະ ປ່າເລິກ. ວັດຖຸມົງຄຸນທີ່ເພິ່ນອະທິຖານຈິດໃຫ້ ຖືເປັນຂອງມີຄ່າຫາຍາກ ເພາະເຕັມໄປດ້ວຍພະລັງປ້ອງກັນໄພ ແລະ ເສີມໂຊກລາບສົມປາຖະໜາ.</p>
-
-                </div>
-
-
-
-                <div class="p-6 bg-amber-50 rounded-2xl border border-amber-200 italic text-amber-900 shadow-inner mt-6">
-
-                    "ການມີພຣະຢູ່ກັບຕົວ ຄືການມີທັມຢູ່ກັບໃຈ. ຫ້ອຍພຣະເຄື່ອງເພື່ອເຕືອນສະຕິໃຫ້ເຮັດແຕ່ຄວາມດີ."
-
-                </div>
-
-            </div>
-
         </div>
 
-    </section>
+        <div class="flex justify-between items-center pt-2">
+            <h2 class="text-md font-bold text-gray-800">📜 ປະຫວັດລາຍການ</h2>
+            <select id="filter-time" onchange="init()" class="p-1.5 border rounded-xl bg-white text-xs font-bold text-gray-700 focus:ring-2 focus:ring-blue-400 outline-none">
+                <option value="all">🌍 ທັງໝົດ</option>
+                <option value="today">📅 ມື້ນີ້</option>
+                <option value="week">🗓️ ອາທິດນີ້</option>
+                <option value="month">📆 ເດືອນນີ້</option>
+                <option value="year">⏳ ປີນີ້</option>
+            </select>
+        </div>
 
-    <section id="amulets" class="bg-stone-100 py-12 px-4 border-t border-stone-200">
-        <div class="container mx-auto">
-            <div class="text-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-stone-900 mb-2">ວັດຖຸມຸງຄຸນ</h2>
-                <div class="w-16 h-1 bg-amber-600 mx-auto mb-2"></div>
-                <p class="text-stone-500 text-xs italic">"ພະແທ້ ຈາກບາລະມີຫຼວງປູ່ ສົມປາຖະໜາ"</p>
+        <div id="list" class="space-y-2.5">
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-                
-                <div class="amulet-card bg-white rounded-xl overflow-hidden shadow-sm">
-                    <div class="img-container">
-                        <img src="l1.jpg" alt="ຫຼຽນສົມປາດຖະໜາ" class="img-full transform hover:scale-105 transition">
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-50 via-gray-50 to-transparent z-10 flex justify-center">
+        <button onclick="toggleBottomSheet(true)" class="w-full max-w-md bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 transition active:scale-95">
+            ✨ ➕ ເພີ່ມລາຍການໃໝ່
+        </button>
+    </div>
+
+    <div id="backdrop" onclick="toggleBottomSheet(false)" class="fixed inset-0 bg-black/40 z-20 hidden opacity-0 transition-opacity duration-300"></div>
+
+    <div id="bottom-sheet" class="bottom-sheet fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl p-6 z-30 pb-8 border-t">
+        <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-5"></div>
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-800">➕ ບັນທຶກລາຍການໃໝ່</h3>
+            <button onclick="toggleBottomSheet(false)" class="text-gray-400 hover:text-gray-600 text-xl font-bold px-2">✕</button>
+        </div>
+
+        <form id="transaction-form" class="space-y-4">
+            <div>
+                <label class="block text-xs text-gray-500 mb-1 font-medium">ວັນທີ</label>
+                <input type="date" id="date" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-400 outline-none text-sm" required>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1 font-medium">ຊື່ລາຍການ</label>
+                <input type="text" id="text" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-400 outline-none text-sm" placeholder="ເຊັ່ນ: ຄ່າອາຫານ, ເງິນເດືອນ" required>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1 font-medium">ຈຳນວນເງິນ (ກີບ)</label>
+                <input type="number" id="amount" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-400 outline-none text-sm font-bold text-blue-600" placeholder="0" required>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1 font-medium">ປະເພດ</label>
+                <select id="type" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-400 outline-none text-sm font-medium">
+                    <option value="income">📈 ລາຍຮັບ</option>
+                    <option value="expense">📉 ລາຍຈ່າຍ</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-bold hover:bg-blue-700 shadow-md transition active:scale-95 mt-2">
+                💾 ບັນທຶກລາຍການ
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const balance = document.getElementById('total-balance');
+        const income = document.getElementById('total-income');
+        const expense = document.getElementById('total-expense');
+        const list = document.getElementById('list');
+        const form = document.getElementById('transaction-form');
+        const text = document.getElementById('text');
+        const amount = document.getElementById('amount');
+        const type = document.getElementById('type');
+        const dateInput = document.getElementById('date');
+        const filterTime = document.getElementById('filter-time');
+        const bottomSheet = document.getElementById('bottom-sheet');
+        const backdrop = document.getElementById('backdrop');
+
+        dateInput.value = new Date().toISOString().slice(0, 10);
+        let transactions = JSON.parse(localStorage.getItem('my_expenses_v2')) || [];
+
+        // ຟັງຊັນ ປິດ/ເປີດ ຟອມປ໊ອບອັບ
+        function toggleBottomSheet(open) {
+            if (open) {
+                backdrop.classList.remove('hidden');
+                setTimeout(() => {
+                    backdrop.classList.add('opacity-100');
+                    bottomSheet.classList.add('open');
+                }, 10);
+            } else {
+                bottomSheet.classList.remove('open');
+                backdrop.classList.remove('opacity-100');
+                setTimeout(() => backdrop.classList.add('hidden'), 30);
+            }
+        }
+
+        function addTransaction(e) {
+            e.preventDefault();
+            const transaction = {
+                id: Date.now(),
+                date: dateInput.value,
+                text: text.value,
+                amount: parseFloat(amount.value),
+                type: type.value
+            };
+            transactions.push(transaction);
+            updateLocalStorage();
+            init();
+            text.value = '';
+            amount.value = '';
+            toggleBottomSheet(false); // ບັນທຶກແລ້ວປິດຟອມອັດຕະໂນມັດ
+        }
+
+        // ປັບປຸງການສະແດງຜົນຈາກຕາຕະລາງມາເປັນແບບ Card ທີ່ເໝາະກັບມືຖື
+        function addTransactionDOM(transaction) {
+            const isIncome = transaction.type === 'income';
+            const card = document.createElement('div');
+            card.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center";
+            
+            const formattedDate = new Date(transaction.date).toLocaleDateString('lo-LA', {day: 'numeric', month: 'short'});
+
+            card.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="text-[11px] font-bold text-gray-400 bg-gray-50 px-2 py-1.5 rounded-lg text-center min-w-[45px]">
+                        ${formattedDate}
                     </div>
-                    <div class="p-3 flex flex-col flex-grow">
-                        <span class="text-[8px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full w-max uppercase">ຍອດນິຍົມ</span>
-                        <h3 class="text-sm font-bold mt-2 mb-1 text-stone-900 line-clamp-1">ຫຼຽນສົມປາດຖະໜາ 2</h3>
-                        <p class="text-stone-400 text-[10px] mb-3">ເນື້ອທອງທິບ</p>
-                        <div class="mt-auto border-t pt-3 flex flex-col gap-2">
-                            <span class="text-sm font-bold text-amber-600">₭200,000</span>
-                            <a href="https://wa.me/8562029988148" class="bg-green-600 text-white py-1.5 rounded-lg text-[11px] font-bold text-center hover:bg-green-700 transition">ຕິດຕໍ່ບູຊາ (WhatsApp)</a>
-                        </div>
+                    <div>
+                        <p class="font-bold text-gray-800 text-sm">${transaction.text}</p>
+                        <p class="text-[10px] text-gray-400">${transaction.type === 'income' ? 'ລາຍຮັບ' : '### ລາຍຈ່າຍ'}</p>
                     </div>
                 </div>
-
-                <div class="amulet-card bg-white rounded-xl overflow-hidden shadow-sm">
-                    <div class="img-container">
-                        <img src="l2.png" alt="ຫຼຽນສົມປາດຖະໜາ" class="img-full transform hover:scale-105 transition">
-                    </div>
-                    <div class="p-3 flex flex-col flex-grow">
-                        <span class="text-[8px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full w-max uppercase">ເນື້ອຕະກວ່າ</span>
-                        <h3 class="text-sm font-bold mt-2 mb-1 text-stone-900 line-clamp-1">ຫຼຽນສົມປາດຖະໜາ 2</h3>
-                        <p class="text-stone-400 text-[10px] mb-3">ເນື້ອຕະກວ່າ</p>
-                        <div class="mt-auto border-t pt-3 flex flex-col gap-2">
-                            <span class="text-sm font-bold text-amber-600">₭ 200,000</span>
-                            <a href="https://wa.me/8562029988148" class="bg-green-600 text-white py-1.5 rounded-lg text-[11px] font-bold text-center hover:bg-green-700 transition">ຕິດຕໍ່ບູຊາ (WhatsApp)</a>
-                        </div>
-                    </div>
+                <div class="flex items-center gap-3">
+                    <span class="font-extrabold text-sm ${isIncome ? 'text-green-600' : 'text-red-500'}">
+                        ${isIncome ? '+' : '-'}${transaction.amount.toLocaleString()}
+                    </span>
+                    <button onclick="removeTransaction(${transaction.id})" class="text-gray-300 hover:text-red-500 p-1 transition">
+                        ✕
+                    </button>
                 </div>
+            `;
+            list.appendChild(card);
+        }
 
-            </div>
-        </div>
-    </section>
+        function getFilteredTransactions() {
+            const now = new Date();
+            const todayStr = now.toISOString().slice(0, 10);
+            return transactions.filter(t => {
+                const tDate = new Date(t.date);
+                if (filterTime.value === 'today') return t.date === todayStr;
+                if (filterTime.value === 'week') {
+                    const currentDay = now.getDay();
+                    const distanceToMonday = currentDay === 0 ? 6 : currentDay - 1;
+                    const monday = new Date(now);
+                    monday.setDate(now.getDate() - distanceToMonday);
+                    monday.setHours(0,0,0,0);
+                    return tDate >= monday && tDate <= now;
+                }
+                if (filterTime.value === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
+                if (filterTime.value === 'year') return tDate.getFullYear() === now.getFullYear();
+                return true;
+            });
+        }
 
-    <footer id="contact" class="bg-stone-900 text-stone-400 py-10 px-4">
-        <div class="container mx-auto text-center border-b border-stone-800 pb-8 mb-8">
-            <h2 class="text-white text-xl font-bold mb-6 uppercase tracking-widest">ຕິດຕໍ່ສອບຖາມ</h2>
-            <div class="flex flex-col md:flex-row justify-center gap-4 text-xs">
-                <div class="bg-stone-800 p-4 rounded-xl flex-1">
-                    <p class="text-amber-500 font-bold mb-1">📍 ວັດຖ້ຳພະ</p>
-                    <p class="text-stone-300">ພູເຂົາຄວາຍ</p>
-                </div>
-                <div class="bg-stone-800 p-4 rounded-xl flex-1 border border-amber-900/30">
-                    <p class="text-amber-500 font-bold mb-1">📞 WhatsApp</p>
-                    <p class="text-stone-300">020 29988148</p>
-                </div>
-            </div>
-        </div>
-        <p class="text-center text-[9px] uppercase tracking-[0.3em] text-stone-600">
-            © 2026 Lao Amulet Center - ບາລະມີຫຼວງປູ່ສຸວັນຄຳ
-        </p>
-    </footer>
+        function updateValues(filteredData) {
+            const totalIncome = filteredData.filter(t => t.type === 'income').reduce((acc, item) => acc + item.amount, 0);
+            const totalExpense = filteredData.filter(t => t.type === 'expense').reduce((acc, item) => acc + item.amount, 0);
+            const totalBalance = transactions.filter(t => t.type === 'income').reduce((acc, item) => acc + item.amount, 0) - transactions.filter(t => t.type === 'expense').reduce((acc, item) => acc + item.amount, 0);
 
+            balance.innerText = `${totalBalance.toLocaleString()} ກີບ`;
+            income.innerText = `${totalIncome.toLocaleString()} ກີບ`;
+            expense.innerText = `${totalExpense.toLocaleString()} ກີບ`;
+        }
+
+        function removeTransaction(id) {
+            if(confirm('ຕ້ອງການລຶບລາຍການນີ້ແທ້ຫຼືບໍ່?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                updateLocalStorage();
+                init();
+            }
+        }
+
+        function updateLocalStorage() {
+            localStorage.setItem('my_expenses_v2', JSON.stringify(transactions));
+        }
+
+        function exportData() {
+            if(transactions.length === 0) return alert('ບໍ່ມີຂໍ້ມູນໃຫ້ Backup');
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(transactions));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `backup_finance_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        transactions = importedData;
+                        updateLocalStorage();
+                        init();
+                        alert('ນຳເຂົ້າຂໍ້ມູນສຳເລັດແລ້ວ!');
+                    }
+                } catch (err) { alert('ບໍ່ສາມາດອ່ານໄຟລ໌ໄດ້'); }
+            };
+            reader.readAsText(file);
+        }
+
+        function init() {
+            list.innerHTML = '';
+            const filteredData = getFilteredTransactions();
+            filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if(filteredData.length === 0) {
+                list.innerHTML = `<p class="text-center text-xs text-gray-400 py-8">📭 ບໍ່ມີລາຍການໃນຊ່ວງເວລານີ້</p>`;
+            } else {
+                filteredData.forEach(addTransactionDOM);
+            }
+            updateValues(filteredData);
+        }
+
+        init();
+        form.addEventListener('submit', addTransaction);
+    </script>
 </body>
 </html>
