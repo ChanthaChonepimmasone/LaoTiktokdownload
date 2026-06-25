@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ບັນຊີລາຍຮັບ - ລາຍຈ່າຍ (Mobile Friendly)</title>
+    <title>ບັນຊີລາຍຮັບ - ລາຍຈ່າຍ (ຄົ້ນຫາວັນທີຍ້ອນຫຼັງ)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Phetsarath&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Phetsarath', sans-serif; -webkit-tap-highlight-color: transparent; }
-        /* ປັບແຕ່ງໃຫ້ມີການອານິເມຊັ່ນເວລາຟອມເດັ້ງຂຶ້ນມາ */
         .bottom-sheet { transition: transform 0.3s ease-in-out; transform: translateY(100%); }
         .bottom-sheet.open { transform: translateY(0); }
     </style>
@@ -16,7 +15,7 @@
 <body class="bg-gray-50 min-h-screen pb-24">
 
     <div class="bg-white shadow-sm p-4 sticky top-0 z-10 flex justify-between items-center">
-        <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">📊 ບັນຊີລາຍຮັບ - ລາຍຈ່າຍ</h1>
+        <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">📊 ບັນຊີຂອງຂ້ອຍ</h1>
         <div class="flex gap-2">
             <button onclick="exportData()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs font-bold transition">💾 Backup</button>
             <label class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
@@ -44,19 +43,32 @@
             </div>
         </div>
 
-        <div class="flex justify-between items-center pt-2">
-            <h2 class="text-md font-bold text-gray-800">📜 ປະຫວັດລາຍການ</h2>
-            <select id="filter-time" onchange="init()" class="p-1.5 border rounded-xl bg-white text-xs font-bold text-gray-700 focus:ring-2 focus:ring-blue-400 outline-none">
-                <option value="all">🌍 ທັງໝົດ</option>
-                <option value="today">📅 ມື້ນີ້</option>
-                <option value="week">🗓️ ອາທິດນີ້</option>
-                <option value="month">📆 ເດືອນນີ້</option>
-                <option value="year">⏳ ປີນີ້</option>
-            </select>
+        <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-gray-500">🔍 ຕົວຕອງຂໍ້ມູນ</span>
+                <button id="clear-date-btn" onclick="clearDateFilter()" class="text-[11px] text-red-500 font-bold hidden">❌ ລ້າງຄ່າວັນທີ</button>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <select id="filter-time" onchange="handleTimeFilterChange()" class="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-bold text-gray-700 outline-none">
+                        <option value="all">🌍 ສະແດງທັງໝົດ</option>
+                        <option value="today">📅 ມື້ນີ້</option>
+                        <option value="week">🗓️ ອາທິດນີ້</option>
+                        <option value="month">📆 ເດືອນນີ້</option>
+                        <option value="year">⏳ ປີນີ້</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="date" id="filter-specific-date" onchange="handleSpecificDateChange()" class="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-bold text-gray-700 outline-none">
+                </div>
+            </div>
         </div>
 
-        <div id="list" class="space-y-2.5">
-            </div>
+        <div class="flex justify-between items-center pt-2">
+            <h2 id="history-title" class="text-md font-bold text-gray-800">📜 ປະຫວັດລາຍການ</h2>
+        </div>
+
+        <div id="list" class="space-y-2.5"></div>
 
     </div>
 
@@ -112,13 +124,15 @@
         const type = document.getElementById('type');
         const dateInput = document.getElementById('date');
         const filterTime = document.getElementById('filter-time');
+        const filterSpecificDate = document.getElementById('filter-specific-date');
+        const clearDateBtn = document.getElementById('clear-date-btn');
+        const historyTitle = document.getElementById('history-title');
         const bottomSheet = document.getElementById('bottom-sheet');
         const backdrop = document.getElementById('backdrop');
 
         dateInput.value = new Date().toISOString().slice(0, 10);
         let transactions = JSON.parse(localStorage.getItem('my_expenses_v2')) || [];
 
-        // ຟັງຊັນ ປິດ/ເປີດ ຟອມປ໊ອບອັບ
         function toggleBottomSheet(open) {
             if (open) {
                 backdrop.classList.remove('hidden');
@@ -131,6 +145,35 @@
                 backdrop.classList.remove('opacity-100');
                 setTimeout(() => backdrop.classList.add('hidden'), 30);
             }
+        }
+
+        // ເມື່ອມີການເລືອກວັນທີເຈາະຈົງ
+        function handleSpecificDateChange() {
+            if (filterSpecificDate.value) {
+                filterTime.disabled = true; // ປິດການໃຊ້ງານຕົວຕອງຫຼັກຊົ່ວຄາວ
+                filterTime.classList.add('opacity-50');
+                clearDateBtn.classList.remove('hidden');
+                
+                // ປ່ຽນຫົວຂໍ້ປະຫວັດໃຫ້ສະແດງວັນທີທີ່ເລືອກ
+                const formatted = new Date(filterSpecificDate.value).toLocaleDateString('lo-LA', {day: 'numeric', month: 'short', year: 'numeric'});
+                historyTitle.innerText = `📅 ປະຫວັດຂອງວັນທີ: ${formatted}`;
+            }
+            init();
+        }
+
+        // ເມື່ອມີການກົດລ້າງຄ່າການເລືອກວັນທີ
+        function clearDateFilter() {
+            filterSpecificDate.value = '';
+            filterTime.disabled = false;
+            filterTime.classList.remove('opacity-50');
+            clearDateBtn.classList.add('hidden');
+            historyTitle.innerText = `📜 ປະຫວັດລາຍການ`;
+            init();
+        }
+
+        // ເມື່ອປ່ຽນຕົວຕອງຊ່ວງເວລາ (Dropdown ຫຼັກ)
+        function handleTimeFilterChange() {
+            clearDateFilter();
         }
 
         function addTransaction(e) {
@@ -147,10 +190,9 @@
             init();
             text.value = '';
             amount.value = '';
-            toggleBottomSheet(false); // ບັນທຶກແລ້ວປິດຟອມອັດຕະໂນມັດ
+            toggleBottomSheet(false);
         }
 
-        // ປັບປຸງການສະແດງຜົນຈາກຕາຕະລາງມາເປັນແບບ Card ທີ່ເໝາະກັບມືຖື
         function addTransactionDOM(transaction) {
             const isIncome = transaction.type === 'income';
             const card = document.createElement('div');
@@ -165,7 +207,7 @@
                     </div>
                     <div>
                         <p class="font-bold text-gray-800 text-sm">${transaction.text}</p>
-                        <p class="text-[10px] text-gray-400">${transaction.type === 'income' ? 'ລາຍຮັບ' : '### ລາຍຈ່າຍ'}</p>
+                        <p class="text-[10px] text-gray-400">${transaction.type === 'income' ? '📈 ລາຍຮັບ' : '📉 ລາຍຈ່າຍ'}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -183,6 +225,13 @@
         function getFilteredTransactions() {
             const now = new Date();
             const todayStr = now.toISOString().slice(0, 10);
+
+            // 1. ຖ້າມີການເລືອກວັນທີເຈາະຈົງ (Specific Date Picker)
+            if (filterSpecificDate.value) {
+                return transactions.filter(t => t.date === filterSpecificDate.value);
+            }
+
+            // 2. ຖ້າບໍ່ມີ ກໍໃຫ້ຕອງຕາມ Dropdown ປົກກະຕິ
             return transactions.filter(t => {
                 const tDate = new Date(t.date);
                 if (filterTime.value === 'today') return t.date === todayStr;
@@ -203,7 +252,11 @@
         function updateValues(filteredData) {
             const totalIncome = filteredData.filter(t => t.type === 'income').reduce((acc, item) => acc + item.amount, 0);
             const totalExpense = filteredData.filter(t => t.type === 'expense').reduce((acc, item) => acc + item.amount, 0);
-            const totalBalance = transactions.filter(t => t.type === 'income').reduce((acc, item) => acc + item.amount, 0) - transactions.filter(t => t.type === 'expense').reduce((acc, item) => acc + item.amount, 0);
+            
+            // ຄຳນວນຍອດເຫຼືອຄົງເຫຼືອທັງໝົດ (ເອົາທັງໝົດທີ່ມີໃນລະບົບມາຫັກກັນ ເພື່ອໃຫ້ຮູ້ຍອດເງິນແທ້ໃນກະເປົ໋າ)
+            const allIncome = transactions.filter(t => t.type === 'income').reduce((acc, item) => acc + item.amount, 0);
+            const allExpense = transactions.filter(t => t.type === 'expense').reduce((acc, item) => acc + item.amount, 0);
+            const totalBalance = allIncome - allExpense;
 
             balance.innerText = `${totalBalance.toLocaleString()} ກີບ`;
             income.innerText = `${totalIncome.toLocaleString()} ກີບ`;
@@ -233,7 +286,7 @@
             downloadAnchor.remove();
         }
 
-        function importData(event) {
+        document.getElementById('import-file').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
@@ -243,13 +296,13 @@
                     if (Array.isArray(importedData)) {
                         transactions = importedData;
                         updateLocalStorage();
-                        init();
+                        clearDateFilter();
                         alert('ນຳເຂົ້າຂໍ້ມູນສຳເລັດແລ້ວ!');
                     }
                 } catch (err) { alert('ບໍ່ສາມາດອ່ານໄຟລ໌ໄດ້'); }
             };
             reader.readAsText(file);
-        }
+        });
 
         function init() {
             list.innerHTML = '';
