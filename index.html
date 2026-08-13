@@ -152,8 +152,6 @@
 
   <div id="map"></div>
 
-  <div class="pin-banner" id="pinBanner">ແຕະໃສ່ແຜນທີ່ ບ່ອນທີ່ຫ້ອງແຖວຢູ່ 📍</div>
-
   <button class="list-toggle" id="listToggle">☰ ລາຍການ</button>
   <button class="fab" id="fabBtn"><span class="fab__icon">📍</span><span id="fabLabel">ປັກໝຸດຫ້ອງແຖວ</span></button>
 
@@ -249,7 +247,6 @@
   var userMarker = null;
   var houses = [];
   var markers = {};
-  var pinMode = false;
   var pendingLatLng = null;
   var deviceId = getDeviceId();
   var photos = [null, null, null]; // dataURL strings per slot
@@ -523,19 +520,15 @@
   // ---- Pin mode ----
   var fabBtn = document.getElementById('fabBtn');
   var fabLabel = document.getElementById('fabLabel');
-  var pinBanner = document.getElementById('pinBanner');
 
   fabBtn.addEventListener('click', function(){
-    pinMode = !pinMode;
-    fabBtn.classList.toggle('active', pinMode);
-    fabLabel.textContent = pinMode ? 'ຍົກເລີກ' : 'ປັກໝຸດຫ້ອງແຖວ';
-    pinBanner.classList.toggle('show', pinMode);
-    closeSheet();
-  });
-
-  map.on('click', function(e){
-    if(!pinMode) return;
-    pendingLatLng = e.latlng;
+    if(!userLatLng){
+      showToast('ກຳລັງຫາຕຳແໜ່ງທ່ານ, ລອງກົດອີກຄັ້ງໃນໜ້ອຍວິນາທີ');
+      locateUser(false);
+      return;
+    }
+    pendingLatLng = { lat: userLatLng[0], lng: userLatLng[1] };
+    map.setView(userLatLng, 17);
     openModal();
   });
 
@@ -562,10 +555,6 @@
   }
   function closeModal(){
     modalOverlay.classList.remove('open');
-    pinMode = false;
-    fabBtn.classList.remove('active');
-    fabLabel.textContent = 'ປັກໝຸດຫ້ອງແຖວ';
-    pinBanner.classList.remove('show');
   }
   document.getElementById('modalCancel').addEventListener('click', closeModal);
   segRent.addEventListener('click', function(){ selectedType='rent'; segRent.classList.add('selected'); segSale.classList.remove('selected'); });
