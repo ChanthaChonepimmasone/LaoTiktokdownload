@@ -68,6 +68,7 @@
   .tag--rent{ background:#DFF3EA; color:var(--teal-dark); }
   .tag--sale{ background:#FFE9CF; color:var(--accent-dark); }
   .popup__call{ display:inline-block; background:var(--teal); color:#fff; text-decoration:none; padding:7px 14px; border-radius:999px; font-size:12.5px; font-weight:700; }
+  .popup__commission{ background:#FFF3DC; color:var(--accent-dark); border-radius:var(--radius-md); padding:6px 10px; font-size:12px; font-weight:700; margin-bottom:8px; }
   .popup__delete{ margin-top:8px; padding-top:8px; border-top:1px solid var(--line); color:var(--coral); font-size:12.5px; font-weight:700; cursor:pointer; }
   .popup__delete:active{ opacity:0.6; }
 
@@ -93,6 +94,7 @@
   .house-item__body{ flex:1; min-width:0; }
   .house-item__name{ font-weight:700; font-size:13.5px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .house-item__price{ font-size:12.5px; color:var(--teal-dark); font-weight:700; }
+  .house-item__commission{ font-size:11px; color:var(--accent-dark); font-weight:700; margin-top:2px; }
   .house-item__dist{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
   .house-item__del{ background:none; border:none; font-size:15px; padding:4px; cursor:pointer; flex-shrink:0; opacity:0.7; }
   .house-item__del:active{ opacity:1; }
@@ -202,6 +204,10 @@
       <div class="field">
         <label>ເບີໂທຕິດຕໍ່</label>
         <input type="tel" id="fPhone" placeholder="020 xxxxxxxx" maxlength="20" />
+      </div>
+      <div class="field">
+        <label>ຄ່າຕອບແທນ (ສຳລັບຄົນແນະນຳ)</label>
+        <input type="text" id="fCommission" placeholder="ຕົວຢ່າງ: 200,000 ກີບ ຖ້າແນະນຳສຳເລັດ" maxlength="60" />
       </div>
 
       <div class="modal__actions">
@@ -357,6 +363,7 @@
     var priceHtml = h.price ? '<div class="popup__price">' + escapeHtml(h.price) + '</div>' : '';
     var noteHtml = h.note ? '<div class="popup__meta">' + escapeHtml(h.note) + '</div>' : '';
     var phoneHtml = h.phone ? '<a class="popup__call" href="tel:' + escapeHtml(h.phone) + '">📞 ' + escapeHtml(h.phone) + '</a>' : '';
+    var commissionHtml = h.commission ? '<div class="popup__commission">🎁 ຄ່າຕອບແທນ: ' + escapeHtml(h.commission) + '</div>' : '';
     var deleteHtml = h.deviceId === deviceId
       ? '<div class="popup__delete" onclick="window.__kheeDeleteHouse(\'' + h.id + '\')">🗑️ ລົບໝຸດນີ້</div>'
       : '';
@@ -368,6 +375,7 @@
         priceHtml +
         noteHtml +
         '<div class="popup__tags">' + tagsHtml + '</div>' +
+        commissionHtml +
         phoneHtml +
         deleteHtml +
       '</div>'
@@ -433,6 +441,7 @@
         '<div class="house-item__body">' +
           '<div class="house-item__name">' + escapeHtml(h.name) + '</div>' +
           '<div class="house-item__price">' + (h.price ? escapeHtml(h.price) : (h.dealType === 'sale' ? 'ຂາຍ' : 'ໃຫ້ເຊົ່າ')) + '</div>' +
+          (h.commission ? '<div class="house-item__commission">🎁 ' + escapeHtml(h.commission) + '</div>' : '') +
           (item.d !== null ? '<div class="house-item__dist">' + fmtDist(item.d) + '</div>' : '') +
         '</div>' +
         (isMine ? '<button class="house-item__del" data-id="' + h.id + '">🗑️</button>' : '');
@@ -538,13 +547,14 @@
   var fPrice = document.getElementById('fPrice');
   var fNote = document.getElementById('fNote');
   var fPhone = document.getElementById('fPhone');
+  var fCommission = document.getElementById('fCommission');
   var segRent = document.getElementById('segRent');
   var segSale = document.getElementById('segSale');
   var modalSave = document.getElementById('modalSave');
   var selectedType = 'rent';
 
   function openModal(){
-    fName.value = ''; fPrice.value = ''; fNote.value = ''; fPhone.value = '';
+    fName.value = ''; fPrice.value = ''; fNote.value = ''; fPhone.value = ''; fCommission.value = '';
     selectedType = 'rent';
     segRent.classList.add('selected'); segSale.classList.remove('selected');
     photos = [null, null, null];
@@ -573,6 +583,7 @@
       price: fPrice.value.trim(),
       note: fNote.value.trim(),
       phone: fPhone.value.trim(),
+      commission: fCommission.value.trim(),
       dealType: selectedType,
       images: photos.filter(Boolean),
       deviceId: deviceId,
