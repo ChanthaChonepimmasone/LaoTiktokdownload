@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+<title>ຫ້ອງແຖວ | ຄົ້ນຫາ ແລະ ປັກໝຸດຫ້ອງແຖວ</title>
+
+<!-- ===== Open Graph / Facebook link preview ===== -->
+<!-- ສຳຄັນ: ແທນທີ່ URL ຂ້າງລຸ່ມນີ້ດ້ວຍ URL ຈິງຂອງເວັບ ແລະ ຮູບ (ຫຼັງ deploy ແລ້ວ) -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://ໃສ່ໂດເມນຂອງທ່ານ/ຫ້ອງແຖວ/" />
+<meta property="og:title" content="ຫ້ອງແຖວ.com - ຄົ້ນຫາ ແລະ ປັກໝຸດຫ້ອງແຖວໃຫ້ເຊົ່າ-ຂາຍ" />
+<meta property="og:description" content="ຫາຫ້ອງແຖວໃຫ້ເຊົ່າ-ຂາຍໃກ້ໆທ່ານ ຫຼືປັກໝຸດແນະນຳຮັບຄ່າຕອບແທນ ຟຣີ 100%" />
+<meta property="og:image" content="https://ໃສ່ໂດເມນຂອງທ່ານ/ຫ້ອງແຖວ/hongthaew-og-image.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="ຫ້ອງແຖວ.com - ຄົ້ນຫາ ແລະ ປັກໝຸດຫ້ອງແຖວໃຫ້ເຊົ່າ-ຂາຍ" />
+<meta name="twitter:description" content="ຫາຫ້ອງແຖວໃຫ້ເຊົ່າ-ຂາຍໃກ້ໆທ່ານ ຫຼືປັກໝຸດແນະນຳຮັບຄ່າຕອບແທນ ຟຣີ 100%" />
+<meta name="twitter:image" content="https://ໃສ່ໂດເມນຂອງທ່ານ/ຫ້ອງແຖວ/hongthaew-og-image.jpg" />
+<!-- ================================================ -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Lao:wght@600;700&family=Noto+Sans+Lao:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<style>
+  :root{
+    --bg:#EAF6F3;
+    --surface:#FFFFFF;
+    --ink:#0B2B29;
+    --ink-soft:#4C6B67;
+    --teal:#0F6D66;
+    --teal-dark:#0A4F4A;
+    --teal-pale:#D3ECE8;
+    --accent:#FFB627;
+    --accent-dark:#E6980A;
+    --coral:#FF6F59;
+    --line:#CFE8E4;
+    --radius-lg:22px;
+    --radius-md:14px;
+    --shadow:0 10px 30px rgba(11,43,41,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans Lao','Noto Sans',sans-serif;
+    overflow:hidden;
+  }
+  #app{ position:relative; height:100vh; width:100%; display:flex; flex-direction:column; }
+
+  .header{ position:relative; z-index:20; background:var(--teal); color:#fff; padding:16px 18px 22px; flex-shrink:0; }
+  .header__row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand__mark{ width:38px;height:38px; border-radius:12px; background:var(--accent); display:flex;align-items:center;justify-content:center; font-size:20px; flex-shrink:0; box-shadow:0 4px 10px rgba(0,0,0,0.15); }
+  .brand__text h1{ font-family:'Noto Serif Lao',serif; font-size:20px; font-weight:700; margin:0; line-height:1.1; }
+  .brand__text p{ margin:2px 0 0; font-size:11.5px; color:rgba(255,255,255,0.78); }
+  .locate-btn{ width:38px;height:38px; border-radius:50%; border:none; background:rgba(255,255,255,0.16); color:#fff; font-size:16px; display:flex;align-items:center;justify-content:center; cursor:pointer; flex-shrink:0; }
+  .locate-btn:active{ background:rgba(255,255,255,0.3); }
+  .tile-strip{ height:9px; width:100%; background-image: repeating-linear-gradient(-45deg, var(--accent) 0 10px, var(--teal-dark) 10px 20px); opacity:0.55; }
+
+  #map{ flex:1; width:100%; z-index:1; }
+  .leaflet-container{ font-family:'Noto Sans Lao',sans-serif; background:var(--teal-pale); }
+  .house-pin{ display:flex;align-items:center;justify-content:center; width:34px;height:34px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); background:var(--teal); border:2px solid #fff; box-shadow:0 3px 8px rgba(11,43,41,0.35); }
+  .house-pin span{ transform:rotate(45deg); font-size:16px; }
+  .house-pin.is-mine{ background:var(--coral); }
+  .user-dot{ width:16px;height:16px; border-radius:50%; background:#2E90FA; border:3px solid #fff; box-shadow:0 0 0 4px rgba(46,144,250,0.25); }
+  .leaflet-popup-content-wrapper{ border-radius:var(--radius-md); box-shadow:var(--shadow); }
+  .leaflet-popup-content{ margin:0; font-size:13.5px; min-width:220px; }
+  .popup__imgs{ display:flex; gap:3px; }
+  .popup__imgs img{ width:33.33%; height:90px; object-fit:cover; cursor:pointer; }
+  .popup__imgs img:first-child{ border-top-left-radius:var(--radius-md); }
+  .popup__imgs img:last-child{ border-top-right-radius:var(--radius-md); }
+  .popup__body{ padding:12px 14px; }
+  .popup__name{ font-weight:700; font-size:14.5px; margin-bottom:3px; }
+  .popup__price{ color:var(--teal-dark); font-weight:700; font-size:14px; margin-bottom:4px; }
+  .popup__meta{ color:var(--ink-soft); font-size:12px; margin-bottom:6px; }
+  .popup__tags{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+  .tag{ display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:600; }
+  .tag--rent{ background:#DFF3EA; color:var(--teal-dark); }
+  .tag--sale{ background:#FFE9CF; color:var(--accent-dark); }
+  .popup__call{ display:inline-block; background:var(--teal); color:#fff; text-decoration:none; padding:7px 14px; border-radius:999px; font-size:12.5px; font-weight:700; }
+  .popup__commission{ background:#FFF3DC; color:var(--accent-dark); border-radius:var(--radius-md); padding:6px 10px; font-size:12px; font-weight:700; margin-bottom:8px; }
+  .popup__delete{ margin-top:8px; padding-top:8px; border-top:1px solid var(--line); color:var(--coral); font-size:12.5px; font-weight:700; cursor:pointer; }
+  .popup__delete:active{ opacity:0.6; }
+
+  .pin-banner{ position:absolute; top:96px; left:50%; transform:translateX(-50%) translateY(-140%); z-index:30; background:var(--ink); color:#fff; padding:9px 16px; border-radius:999px; font-size:13px; font-weight:500; box-shadow:var(--shadow); transition:transform .25s ease; white-space:nowrap; }
+  .pin-banner.show{ transform:translateX(-50%) translateY(0); }
+
+  .fab{ position:absolute; right:16px; bottom:22px; z-index:25; background:var(--accent); color:var(--ink); border:none; border-radius:999px; padding:14px 18px; font-size:14.5px; font-weight:700; display:flex;align-items:center;gap:8px; box-shadow:0 8px 20px rgba(255,182,39,0.5); cursor:pointer; font-family:inherit; }
+  .fab.active{ background:var(--coral); color:#fff; box-shadow:0 8px 20px rgba(255,111,89,0.5); }
+  .fab__icon{ font-size:17px; }
+  .list-toggle{ position:absolute; left:16px; bottom:22px; z-index:25; background:var(--surface); color:var(--ink); border:none; border-radius:999px; padding:14px 16px; font-size:13.5px; font-weight:700; display:flex;align-items:center;gap:6px; box-shadow:var(--shadow); cursor:pointer; font-family:inherit; }
+
+  .sheet{ position:absolute; left:0;right:0;bottom:0; z-index:40; background:var(--surface); border-radius:22px 22px 0 0; box-shadow:0 -10px 30px rgba(11,43,41,0.2); max-height:70vh; transform:translateY(100%); transition:transform .28s ease; display:flex; flex-direction:column; }
+  .sheet.open{ transform:translateY(0); }
+  .sheet__handle{ width:40px;height:4px; background:var(--line); border-radius:99px; margin:10px auto 4px; flex-shrink:0; }
+  .sheet__head{ display:flex;align-items:center;justify-content:space-between; padding:6px 18px 10px; flex-shrink:0; }
+  .sheet__head h2{ font-family:'Noto Serif Lao',serif; font-size:16.5px; margin:0; }
+  .sheet__close{ background:var(--bg); border:none; width:30px;height:30px; border-radius:50%; font-size:14px; cursor:pointer; color:var(--ink-soft); }
+  .sheet__list{ overflow-y:auto; padding:0 12px 18px; }
+  .house-item{ display:flex; align-items:center; gap:12px; padding:10px 8px; border-bottom:1px solid var(--line); cursor:pointer; }
+  .house-item:last-child{ border-bottom:none; }
+  .house-item__thumb{ width:54px;height:54px; border-radius:12px; background:var(--teal-pale); object-fit:cover; flex-shrink:0; }
+  .house-item__thumb.placeholder{ display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .house-item__body{ flex:1; min-width:0; }
+  .house-item__name{ font-weight:700; font-size:13.5px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .house-item__price{ font-size:12.5px; color:var(--teal-dark); font-weight:700; }
+  .house-item__commission{ font-size:11px; color:var(--accent-dark); font-weight:700; margin-top:2px; }
+  .house-item__dist{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
+  .house-item__del{ background:none; border:none; font-size:15px; padding:4px; cursor:pointer; flex-shrink:0; opacity:0.7; }
+  .house-item__del:active{ opacity:1; }
+  .empty-state{ text-align:center; padding:34px 20px; color:var(--ink-soft); font-size:13.5px; }
+  .empty-state__icon{ font-size:34px; margin-bottom:8px; }
+
+  .modal-overlay{ position:absolute; inset:0; background:rgba(11,43,41,0.45); z-index:60; display:none; align-items:flex-end; justify-content:center; }
+  .modal-overlay.open{ display:flex; }
+  .modal{ background:var(--surface); width:100%; max-width:480px; border-radius:22px 22px 0 0; padding:20px 20px 26px; box-shadow:0 -10px 30px rgba(11,43,41,0.25); animation:slideUp .22s ease; max-height:88vh; overflow-y:auto; }
+  @keyframes slideUp{ from{ transform:translateY(30px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
+  .modal h3{ font-family:'Noto Serif Lao',serif; font-size:17px; margin:0 0 4px; }
+  .modal p.hint{ font-size:12.5px; color:var(--ink-soft); margin:0 0 16px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:12.5px; font-weight:700; margin-bottom:6px; color:var(--ink-soft); }
+  .field input[type=text], .field input[type=tel], .field textarea{ width:100%; border:1.5px solid var(--line); border-radius:var(--radius-md); padding:10px 12px; font-size:14px; font-family:inherit; color:var(--ink); background:var(--bg); resize:none; }
+  .field input:focus, .field textarea:focus{ outline:none; border-color:var(--teal); }
+  .seg{ display:flex; gap:8px; }
+  .seg button{ flex:1; padding:9px 6px; border-radius:var(--radius-md); border:1.5px solid var(--line); background:var(--bg); font-family:inherit; font-size:13px; font-weight:600; color:var(--ink-soft); cursor:pointer; }
+  .seg button.selected{ background:var(--teal); border-color:var(--teal); color:#fff; }
+  .photo-grid{ display:flex; gap:8px; }
+  .photo-slot{ flex:1; aspect-ratio:1; border-radius:var(--radius-md); border:1.5px dashed var(--line); background:var(--bg); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; cursor:pointer; }
+  .photo-slot img{ width:100%; height:100%; object-fit:cover; }
+  .photo-slot__icon{ font-size:22px; color:var(--ink-soft); }
+  .photo-slot__remove{ position:absolute; top:4px; right:4px; width:20px;height:20px; border-radius:50%; background:rgba(11,43,41,0.65); color:#fff; border:none; font-size:11px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .photo-hint{ font-size:11px; color:var(--ink-soft); margin-top:6px; }
+  .modal__actions{ display:flex; gap:10px; margin-top:6px; }
+  .btn{ flex:1; border:none; border-radius:999px; padding:13px; font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer; }
+  .btn--ghost{ background:var(--bg); color:var(--ink-soft); }
+  .btn--primary{ background:var(--accent); color:var(--ink); }
+  .btn--primary:disabled{ opacity:0.5; cursor:not-allowed; }
+
+  .lightbox{ position:absolute; inset:0; background:rgba(0,0,0,0.9); z-index:80; display:none; align-items:center; justify-content:center; }
+  .lightbox.open{ display:flex; }
+  .lightbox img{ max-width:92%; max-height:80vh; border-radius:8px; }
+  .lightbox__close{ position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.15); color:#fff; border:none; width:36px;height:36px; border-radius:50%; font-size:16px; cursor:pointer; }
+
+  .toast{ position:absolute; top:96px; left:50%; transform:translateX(-50%) translateY(-140%); z-index:70; background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:13px; box-shadow:var(--shadow); transition:transform .25s ease; white-space:nowrap; }
+  .toast.show{ transform:translateX(-50%) translateY(0); }
+
+  .pay-modal .modal{ max-height:88vh; }
+  .pay-modal .modal p.hint{ margin-bottom:18px; }
+  .pay-grid{ display:flex; flex-direction:column; gap:14px; }
+  .pay-card{ border:1.5px solid var(--line); border-radius:var(--radius-md); padding:12px; display:flex; align-items:center; gap:12px; cursor:pointer; background:var(--bg); }
+  .pay-card__img{ width:64px;height:64px; border-radius:10px; object-fit:cover; flex-shrink:0; border:1px solid var(--line); background:#fff; }
+  .pay-card__body{ flex:1; min-width:0; }
+  .pay-card__amount{ font-weight:700; font-size:15px; color:var(--teal-dark); }
+  .pay-card__note{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
+  .pay-card__tap{ font-size:11px; color:var(--accent-dark); font-weight:700; margin-top:4px; }
+  .pay-footer-note{ font-size:11.5px; color:var(--ink-soft); text-align:center; margin-top:16px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="header">
+    <div class="header__row">
+      <div class="brand">
+        <div class="brand__mark">🏠</div>
+        <div class="brand__text">
+          <h1>ຫ້ອງແຖວ</h1>
+          <p>ຄົ້ນຫາ ແລະ ປັກໝຸດຫ້ອງແຖວໃຫ້ເຊົ່າ-ຂາຍ</p>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="locate-btn" id="payBtn" title="ຊ່ອງທາງຈ່າຍເງິນ">💳</button>
+        <button class="locate-btn" id="locateBtn" title="ຫາຕຳແໜ່ງຂ້ອຍ">🎯</button>
+      </div>
+    </div>
+  </div>
+  <div class="tile-strip"></div>
+
+  <div id="map"></div>
+
+  <button class="list-toggle" id="listToggle">☰ ລາຍການ</button>
+  <button class="fab" id="fabBtn"><span class="fab__icon">📍</span><span id="fabLabel">ປັກໝຸດຫ້ອງແຖວ</span></button>
+
+  <div class="sheet" id="sheet">
+    <div class="sheet__handle"></div>
+    <div class="sheet__head">
+      <h2 id="sheetTitle">ຫ້ອງແຖວໃກ້ໆ</h2>
+      <button class="sheet__close" id="sheetClose">✕</button>
+    </div>
+    <div class="sheet__list" id="sheetList"></div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3>ປັກໝຸດຫ້ອງແຖວໃໝ່</h3>
+      <p class="hint">ໃສ່ຂໍ້ມູນ ແລະ ຮູບ ເພື່ອໃຫ້ຄົນສົນໃຈຕິດຕໍ່ໄດ້ງ່າຍ</p>
+
+      <div class="field">
+        <label>ຮູບພາບ (ສູງສຸດ 3 ຮູບ)</label>
+        <div class="photo-grid" id="photoGrid">
+          <div class="photo-slot" data-slot="0"><span class="photo-slot__icon">📷</span></div>
+          <div class="photo-slot" data-slot="1"><span class="photo-slot__icon">📷</span></div>
+          <div class="photo-slot" data-slot="2"><span class="photo-slot__icon">📷</span></div>
+        </div>
+        <div class="photo-hint">ກົດຊ່ອງເພື່ອເລືອກຮູບ, ຮູບຈະຖືກຫຍໍ້ຂະໜາດອັດຕະໂນມັດ</div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" />
+      </div>
+
+      <div class="field">
+        <label>ຊື່ / ຫົວຂໍ້ *</label>
+        <input type="text" id="fName" placeholder="ຕົວຢ່າງ: ຫ້ອງແຖວ 2 ຊັ້ນ ຖະໜົນ..." maxlength="70" />
+      </div>
+      <div class="field">
+        <label>ລາຄາ</label>
+        <input type="text" id="fPrice" placeholder="ຕົວຢ່າງ: 2,500,000 ກີບ/ເດືອນ" maxlength="40" />
+      </div>
+      <div class="field">
+        <label>ປະເພດ</label>
+        <div class="seg">
+          <button type="button" id="segRent" class="selected">ໃຫ້ເຊົ່າ</button>
+          <button type="button" id="segSale">ຂາຍ</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>ໝາຍເຫດ (ບໍ່ບັງຄັບ)</label>
+        <textarea id="fNote" rows="2" placeholder="ຈຳນວນຫ້ອງນອນ, ພື້ນທີ່, ຈຸດເດັ່ນ..." maxlength="160"></textarea>
+      </div>
+      <div class="field">
+        <label>ເບີໂທຕິດຕໍ່</label>
+        <input type="tel" id="fPhone" placeholder="020 xxxxxxxx" maxlength="20" />
+      </div>
+      <div class="field">
+        <label>ຄ່າຕອບແທນ (ສຳລັບຄົນແນະນຳ)</label>
+        <input type="text" id="fCommission" placeholder="ຕົວຢ່າງ: 200,000 ກີບ ຖ້າແນະນຳສຳເລັດ" maxlength="60" />
+      </div>
+
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="modalCancel">ຍົກເລີກ</button>
+        <button class="btn btn--primary" id="modalSave" disabled>ບັນທຶກ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay pay-modal" id="payModalOverlay">
+    <div class="modal">
+      <h3>ຊ່ອງທາງຈ່າຍເງິນ</h3>
+      <p class="hint">ສະແກນ QR ຂ້າງລຸ່ມນີ້ເພື່ອສະໜັບສະໜູນ ຫຼື ຊຳລະຄ່າບໍລິການເວັບໄຊດ໌ ຫ້ອງແຖວ.com</p>
+      <div class="pay-grid">
+        <div class="pay-card" data-src="assets/qr-10000.jpg">
+          <img class="pay-card__img" src="assets/qr-10000.jpg" alt="QR ຈ່າຍເງິນ 10,000 ກີບ" />
+          <div class="pay-card__body">
+            <div class="pay-card__amount">₭ 10,000</div>
+            <div class="pay-card__note">CHANTHACHONE PIMMASONE — LAK 0302****4507</div>
+            <div class="pay-card__tap">ກົດເພື່ອຂະຫຍາຍ</div>
+          </div>
+        </div>
+        <div class="pay-card" data-src="assets/qr-27000.jpg">
+          <img class="pay-card__img" src="assets/qr-27000.jpg" alt="QR ຈ່າຍເງິນ 27,000 ກີບ" />
+          <div class="pay-card__body">
+            <div class="pay-card__amount">₭ 27,000</div>
+            <div class="pay-card__note">CHANTHACHONE PIMMASONE — LAK 0302****4507</div>
+            <div class="pay-card__tap">ກົດເພື່ອຂະຫຍາຍ</div>
+          </div>
+        </div>
+        <div class="pay-card" data-src="assets/qr-49000.jpg">
+          <img class="pay-card__img" src="assets/qr-49000.jpg" alt="QR ຈ່າຍເງິນ 49,000 ກີບ" />
+          <div class="pay-card__body">
+            <div class="pay-card__amount">₭ 49,000</div>
+            <div class="pay-card__note">CHANTHACHONE PIMMASONE — LAK 0302****4507</div>
+            <div class="pay-card__tap">ກົດເພື່ອຂະຫຍາຍ</div>
+          </div>
+        </div>
+        <div class="pay-card" data-src="assets/qr-89000.jpg">
+          <img class="pay-card__img" src="assets/qr-89000.jpg" alt="QR ຈ່າຍເງິນ 89,000 ກີບ" />
+          <div class="pay-card__body">
+            <div class="pay-card__amount">₭ 89,000</div>
+            <div class="pay-card__note">CHANTHACHONE PIMMASONE — LAK 0302****4507</div>
+            <div class="pay-card__tap">ກົດເພື່ອຂະຫຍາຍ</div>
+          </div>
+        </div>
+      </div>
+      <div class="pay-footer-note">ຮູບ QR ຖືກສະໜອງໂດຍເຈົ້າຂອງເວັບໄຊດ໌. ກະລຸນາກວດສອບຊື່ຜູ້ຮັບເງິນ ແລະ ຈຳນວນເງິນ ກ່ອນສະແກນຈ່າຍທຸກຄັ້ງ.</div>
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="payModalClose">ປິດ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox__close" id="lightboxClose">✕</button>
+    <img id="lightboxImg" src="" alt="" />
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function(){
+  // ===== ວາງ firebaseConfig ຂອງທ່ານ (ໂປຣເຈັກດຽວກັນກັບແອັບຫ້ອງນ້ຳ ກໍ່ໄດ້) =====
+  var firebaseConfig = {
+    apiKey: "AIzaSyCob3YpIH3beuuoONeXEgmu3C0ujXaU3Rk",
+    authDomain: "khee-toilet-finder-ca54b.firebaseapp.com",
+    projectId: "khee-toilet-finder-ca54b",
+    storageBucket: "khee-toilet-finder-ca54b.firebasestorage.app",
+    messagingSenderId: "168222384544",
+    appId: "1:168222384544:web:c5ad12601c28b03a6184c5"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var db = firebase.firestore();
+  var housesCol = db.collection('hongthaew_listings');
+  // ===============================================================
+
+  var VIENTIANE = [17.9757, 102.6331];
+  var map = L.map('map', { zoomControl:false }).setView(VIENTIANE, 14);
+  L.control.zoom({ position:'bottomright' }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:19,
+    attribution:'&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  var userLatLng = null;
+  var userMarker = null;
+  var houses = [];
+  var markers = {};
+  var pendingLatLng = null;
+  var deviceId = getDeviceId();
+  var photos = [null, null, null]; // dataURL strings per slot
+  var activeSlot = null;
+
+  function getDeviceId(){
+    var k = 'khee_device_id';
+    try{
+      var existing = localStorage.getItem(k);
+      if(existing) return existing;
+      var fresh = 'd_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem(k, fresh);
+      return fresh;
+    }catch(e){
+      if(!window.__kheeDeviceId){
+        window.__kheeDeviceId = 'd_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      }
+      return window.__kheeDeviceId;
+    }
+  }
+
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+
+  function haversine(a, b){
+    var R = 6371000;
+    var dLat = (b[0]-a[0]) * Math.PI/180;
+    var dLng = (b[1]-a[1]) * Math.PI/180;
+    var lat1 = a[0] * Math.PI/180;
+    var lat2 = b[0] * Math.PI/180;
+    var h = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  function fmtDist(m){
+    if(m < 1000) return Math.round(m) + ' ມ';
+    return (m/1000).toFixed(1) + ' ກມ';
+  }
+  function escapeHtml(s){
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function locateUser(recenter){
+    if(!navigator.geolocation){ showToast('ອຸປະກອນນີ້ບໍ່ຮອງຮັບການຫາຕຳແໜ່ງ'); return; }
+    navigator.geolocation.getCurrentPosition(function(pos){
+      userLatLng = [pos.coords.latitude, pos.coords.longitude];
+      if(!userMarker){
+        userMarker = L.marker(userLatLng, { icon: L.divIcon({ className:'', html:'<div class="user-dot"></div>', iconSize:[16,16] }) }).addTo(map);
+      } else {
+        userMarker.setLatLng(userLatLng);
+      }
+      if(recenter) map.setView(userLatLng, 15);
+      renderList();
+    }, function(){
+      showToast('ບໍ່ສາມາດຫາຕຳແໜ່ງໄດ້ ກະລຸນາອະນຸຍາດການເຂົ້າເຖິງທີ່ຕັ້ງ');
+    }, { enableHighAccuracy:true, timeout:8000 });
+  }
+
+  function pinHtml(mine){
+    return '<div class="house-pin' + (mine ? ' is-mine' : '') + '"><span>🏠</span></div>';
+  }
+
+  function clearAllMarkers(){
+    Object.keys(markers).forEach(function(id){ map.removeLayer(markers[id]); });
+    markers = {};
+  }
+
+  async function deleteHouse(id){
+    if(!confirm('ຕ້ອງການລົບໝຸດນີ້ອອກແທ້ບໍ?')) return;
+    try{
+      await housesCol.doc(id).delete();
+      showToast('ລົບໝຸດແລ້ວ');
+      map.closePopup();
+    }catch(e){
+      console.error(e);
+      showToast('ລົບບໍ່ສຳເລັດ, ລອງໃໝ່ອີກຄັ້ງ');
+    }
+  }
+  window.__kheeDeleteHouse = deleteHouse;
+  window.__kheeOpenLightbox = function(src){
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  };
+
+  function addMarkerForHouse(h){
+    var icon = L.divIcon({
+      className:'',
+      html: pinHtml(h.deviceId === deviceId),
+      iconSize:[34,34],
+      iconAnchor:[17,32],
+      popupAnchor:[0,-30]
+    });
+    var m = L.marker([h.lat, h.lng], { icon: icon }).addTo(map);
+
+    var imgs = (h.images || []).filter(Boolean);
+    var imgsHtml = imgs.length
+      ? '<div class="popup__imgs">' + imgs.map(function(src){
+          return '<img src="' + src + '" onclick="window.__kheeOpenLightbox(\'' + src.replace(/'/g,"\\'") + '\')" />';
+        }).join('') + '</div>'
+      : '';
+    var tagsHtml = '<span class="tag ' + (h.dealType === 'sale' ? 'tag--sale' : 'tag--rent') + '">' +
+      (h.dealType === 'sale' ? 'ຂາຍ' : 'ໃຫ້ເຊົ່າ') + '</span>';
+    var priceHtml = h.price ? '<div class="popup__price">' + escapeHtml(h.price) + '</div>' : '';
+    var noteHtml = h.note ? '<div class="popup__meta">' + escapeHtml(h.note) + '</div>' : '';
+    var phoneHtml = h.phone ? '<a class="popup__call" href="tel:' + escapeHtml(h.phone) + '">📞 ' + escapeHtml(h.phone) + '</a>' : '';
+    var commissionHtml = h.commission ? '<div class="popup__commission">🎁 ຄ່າຕອບແທນ: ' + escapeHtml(h.commission) + '</div>' : '';
+    var deleteHtml = h.deviceId === deviceId
+      ? '<div class="popup__delete" onclick="window.__kheeDeleteHouse(\'' + h.id + '\')">🗑️ ລົບໝຸດນີ້</div>'
+      : '';
+
+    m.bindPopup(
+      imgsHtml +
+      '<div class="popup__body">' +
+        '<div class="popup__name">' + escapeHtml(h.name) + '</div>' +
+        priceHtml +
+        noteHtml +
+        '<div class="popup__tags">' + tagsHtml + '</div>' +
+        commissionHtml +
+        phoneHtml +
+        deleteHtml +
+      '</div>'
+    );
+    markers[h.id] = m;
+  }
+
+  function listenHouses(){
+    housesCol.orderBy('addedAt', 'desc').onSnapshot(function(snapshot){
+      clearAllMarkers();
+      houses = snapshot.docs.map(function(doc){
+        var d = doc.data();
+        d.id = doc.id;
+        return d;
+      });
+      houses.forEach(addMarkerForHouse);
+      renderList();
+    }, function(err){
+      console.error(err);
+      showToast('ບໍ່ສາມາດເຊື່ອມຕໍ່ຖານຂໍ້ມູນໄດ້ ກວດ firebaseConfig / rules');
+    });
+  }
+
+  async function addHouseToDb(h){
+    try{
+      await housesCol.add(h);
+      return true;
+    }catch(e){
+      console.error(e);
+      showToast('ບັນທຶກບໍ່ສຳເລັດ, ລອງໃໝ່ອີກຄັ້ງ (ອາດຮູບໃຫຍ່ເກີນໄປ)');
+      return false;
+    }
+  }
+
+  function renderList(){
+    var listEl = document.getElementById('sheetList');
+    var titleEl = document.getElementById('sheetTitle');
+    if(houses.length === 0){
+      titleEl.textContent = 'ຫ້ອງແຖວໃກ້ໆ';
+      listEl.innerHTML = '<div class="empty-state"><div class="empty-state__icon">🏠</div>ຍັງບໍ່ມີຫ້ອງແຖວຖືກປັກໄວ້ໃນແຜນທີ່<br/>ເປັນຄົນທຳອິດ ກົດ "ປັກໝຸດຫ້ອງແຖວ" ເລີຍ!</div>';
+      return;
+    }
+    var withDist = houses.map(function(h){
+      var d = userLatLng ? haversine(userLatLng, [h.lat, h.lng]) : null;
+      return { h:h, d:d };
+    });
+    withDist.sort(function(a,b){
+      if(a.d === null && b.d === null) return 0;
+      if(a.d === null) return 1;
+      if(b.d === null) return -1;
+      return a.d - b.d;
+    });
+    titleEl.textContent = 'ຫ້ອງແຖວໃກ້ໆ (' + houses.length + ')';
+    listEl.innerHTML = '';
+    withDist.forEach(function(item){
+      var h = item.h;
+      var isMine = h.deviceId === deviceId;
+      var thumb = (h.images || []).filter(Boolean)[0];
+      var row = document.createElement('div');
+      row.className = 'house-item';
+      row.innerHTML =
+        (thumb ? '<img class="house-item__thumb" src="' + thumb + '" />' : '<div class="house-item__thumb placeholder">🏠</div>') +
+        '<div class="house-item__body">' +
+          '<div class="house-item__name">' + escapeHtml(h.name) + '</div>' +
+          '<div class="house-item__price">' + (h.price ? escapeHtml(h.price) : (h.dealType === 'sale' ? 'ຂາຍ' : 'ໃຫ້ເຊົ່າ')) + '</div>' +
+          (h.commission ? '<div class="house-item__commission">🎁 ' + escapeHtml(h.commission) + '</div>' : '') +
+          (item.d !== null ? '<div class="house-item__dist">' + fmtDist(item.d) + '</div>' : '') +
+        '</div>' +
+        (isMine ? '<button class="house-item__del" data-id="' + h.id + '">🗑️</button>' : '');
+      row.addEventListener('click', function(ev){
+        if(ev.target.classList.contains('house-item__del')){
+          deleteHouse(ev.target.getAttribute('data-id'));
+          return;
+        }
+        map.setView([h.lat, h.lng], 17);
+        if(markers[h.id]) markers[h.id].openPopup();
+        closeSheet();
+      });
+      listEl.appendChild(row);
+    });
+  }
+
+  // ---- Photo handling ----
+  var fileInput = document.getElementById('fileInput');
+  var photoGrid = document.getElementById('photoGrid');
+
+  photoGrid.querySelectorAll('.photo-slot').forEach(function(slot){
+    slot.addEventListener('click', function(ev){
+      if(ev.target.classList.contains('photo-slot__remove')) return;
+      activeSlot = parseInt(slot.getAttribute('data-slot'), 10);
+      fileInput.value = '';
+      fileInput.click();
+    });
+  });
+
+  fileInput.addEventListener('change', function(){
+    var file = fileInput.files[0];
+    if(!file || activeSlot === null) return;
+    compressImage(file, function(dataUrl){
+      photos[activeSlot] = dataUrl;
+      renderPhotoSlot(activeSlot);
+      updateSaveState();
+    }, function(){
+      showToast('ໂຫຼດຮູບບໍ່ສຳເລັດ, ລອງຮູບອື່ນ');
+    });
+  });
+
+  function compressImage(file, onDone, onError){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        var maxDim = 700;
+        var w = img.width, h = img.height;
+        if(w > h && w > maxDim){ h = Math.round(h * maxDim / w); w = maxDim; }
+        else if(h > maxDim){ w = Math.round(w * maxDim / h); h = maxDim; }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        var quality = 0.7;
+        var dataUrl = canvas.toDataURL('image/jpeg', quality);
+        // shrink further if still large, to stay well under Firestore's 1MiB doc limit
+        while(dataUrl.length > 220000 && quality > 0.25){
+          quality -= 0.1;
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+        onDone(dataUrl);
+      };
+      img.onerror = onError;
+      img.src = e.target.result;
+    };
+    reader.onerror = onError;
+    reader.readAsDataURL(file);
+  }
+
+  function renderPhotoSlot(i){
+    var slot = photoGrid.querySelector('[data-slot="' + i + '"]');
+    if(photos[i]){
+      slot.innerHTML = '<img src="' + photos[i] + '" /><button type="button" class="photo-slot__remove" data-slot="' + i + '">✕</button>';
+      slot.querySelector('.photo-slot__remove').addEventListener('click', function(ev){
+        ev.stopPropagation();
+        photos[i] = null;
+        renderPhotoSlot(i);
+        updateSaveState();
+      });
+    } else {
+      slot.innerHTML = '<span class="photo-slot__icon">📷</span>';
+    }
+  }
+
+  // ---- Pin mode ----
+  var fabBtn = document.getElementById('fabBtn');
+  var fabLabel = document.getElementById('fabLabel');
+
+  fabBtn.addEventListener('click', function(){
+    if(!userLatLng){
+      showToast('ກຳລັງຫາຕຳແໜ່ງທ່ານ, ລອງກົດອີກຄັ້ງໃນໜ້ອຍວິນາທີ');
+      locateUser(false);
+      return;
+    }
+    pendingLatLng = { lat: userLatLng[0], lng: userLatLng[1] };
+    map.setView(userLatLng, 17);
+    openModal();
+  });
+
+  // ---- Modal ----
+  var modalOverlay = document.getElementById('modalOverlay');
+  var fName = document.getElementById('fName');
+  var fPrice = document.getElementById('fPrice');
+  var fNote = document.getElementById('fNote');
+  var fPhone = document.getElementById('fPhone');
+  var fCommission = document.getElementById('fCommission');
+  var segRent = document.getElementById('segRent');
+  var segSale = document.getElementById('segSale');
+  var modalSave = document.getElementById('modalSave');
+  var selectedType = 'rent';
+
+  function openModal(){
+    fName.value = ''; fPrice.value = ''; fNote.value = ''; fPhone.value = ''; fCommission.value = '';
+    selectedType = 'rent';
+    segRent.classList.add('selected'); segSale.classList.remove('selected');
+    photos = [null, null, null];
+    for(var i=0;i<3;i++) renderPhotoSlot(i);
+    modalSave.disabled = true;
+    modalOverlay.classList.add('open');
+    setTimeout(function(){ fName.focus(); }, 200);
+  }
+  function closeModal(){
+    modalOverlay.classList.remove('open');
+  }
+  document.getElementById('modalCancel').addEventListener('click', closeModal);
+  segRent.addEventListener('click', function(){ selectedType='rent'; segRent.classList.add('selected'); segSale.classList.remove('selected'); });
+  segSale.addEventListener('click', function(){ selectedType='sale'; segSale.classList.add('selected'); segRent.classList.remove('selected'); });
+  function updateSaveState(){ modalSave.disabled = fName.value.trim().length === 0; }
+  fName.addEventListener('input', updateSaveState);
+
+  modalSave.addEventListener('click', async function(){
+    if(!pendingLatLng || fName.value.trim().length === 0) return;
+    modalSave.disabled = true;
+    modalSave.textContent = 'ກຳລັງບັນທຶກ...';
+    var h = {
+      lat: pendingLatLng.lat,
+      lng: pendingLatLng.lng,
+      name: fName.value.trim(),
+      price: fPrice.value.trim(),
+      note: fNote.value.trim(),
+      phone: fPhone.value.trim(),
+      commission: fCommission.value.trim(),
+      dealType: selectedType,
+      images: photos.filter(Boolean),
+      deviceId: deviceId,
+      addedAt: Date.now()
+    };
+    var ok = await addHouseToDb(h);
+    modalSave.textContent = 'ບັນທຶກ';
+    modalSave.disabled = false;
+    if(ok){
+      showToast('ປັກໝຸດສຳເລັດແລ້ວ! ຂອບໃຈທີ່ຊ່ວຍເຫຼືອ 🙏');
+      closeModal();
+    }
+  });
+
+  // ---- Lightbox ----
+  document.getElementById('lightboxClose').addEventListener('click', function(){
+    document.getElementById('lightbox').classList.remove('open');
+  });
+  document.getElementById('lightbox').addEventListener('click', function(e){
+    if(e.target.id === 'lightbox') document.getElementById('lightbox').classList.remove('open');
+  });
+
+  // ---- Sheet ----
+  var sheet = document.getElementById('sheet');
+  function openSheet(){ sheet.classList.add('open'); renderList(); }
+  function closeSheet(){ sheet.classList.remove('open'); }
+  document.getElementById('listToggle').addEventListener('click', openSheet);
+  document.getElementById('sheetClose').addEventListener('click', closeSheet);
+
+  document.getElementById('locateBtn').addEventListener('click', function(){ locateUser(true); });
+
+  // ---- Payment channels modal ----
+  var payModalOverlay = document.getElementById('payModalOverlay');
+  document.getElementById('payBtn').addEventListener('click', function(){ payModalOverlay.classList.add('open'); });
+  document.getElementById('payModalClose').addEventListener('click', function(){ payModalOverlay.classList.remove('open'); });
+  payModalOverlay.querySelectorAll('.pay-card').forEach(function(card){
+    card.addEventListener('click', function(){
+      window.__kheeOpenLightbox(card.getAttribute('data-src'));
+    });
+  });
+
+  // ---- Init ----
+  listenHouses();
+  locateUser(true);
+})();
+</script>
+</body>
+</html>
