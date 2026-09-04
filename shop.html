@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ຮ້ານຄ້າອອນລາຍ - Lao Karaoke Shop</title>
+<meta name="description" content="ຊື້ສາຍສາກ iPhone ແລະ ໝວກແຟຊັນ ລາຄາຖືກ ສົ່ງໄວທົ່ວປະເທດ ສັ່ງຊື້ງ່າຍຜ່ານ WhatsApp">
+<style>
+  :root {
+    --primary: #2c5282; --primary-hover: #2a4a7f; --primary-light: #ebf4ff;
+    --bg: #f0f4f8; --surface: #ffffff; --border: #e2e8f0;
+    --text: #1a202c; --text-muted: #718096;
+    --accent: #dd6b20; --accent-hover: #c05621;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --primary: #63b3ed; --primary-hover: #90cdf4; --primary-light: #1a2a3a;
+      --bg: #0f172a; --surface: #1e293b; --border: #334155;
+      --text: #f1f5f9; --text-muted: #94a3b8;
+      --accent: #f6ad55; --accent-hover: #fbd38d;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans Lao', 'Saysettha OT', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; }
+  .top-nav { display: flex; align-items: center; gap: 10px; padding: 16px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .top-nav a { display: flex; align-items: center; gap: 8px; color: var(--primary); text-decoration: none; font-weight: 700; font-size: 1.05rem; }
+  .top-nav .icon { width: 26px; height: 26px; border-radius: 6px; background: var(--primary); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:0.9rem; }
+
+  .hero { text-align: center; padding: 32px 0 8px; }
+  .hero h1 { font-size: 1.7rem; font-weight: 800; margin-bottom: 6px; }
+  .hero p { color: var(--text-muted); font-size: 0.95rem; }
+  .hero p.en { font-size: 0.82rem; max-width: 480px; margin: 6px auto 0; }
+
+  .tabs { display: flex; gap: 10px; justify-content: center; margin: 24px 0 20px; flex-wrap: wrap; }
+  .tab-btn { padding: 8px 18px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+  .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 16px; }
+  .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .15s, box-shadow .15s; }
+  .product-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+  .product-thumb { height: 130px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: var(--primary-light); }
+  .product-body { padding: 12px 14px 16px; }
+  .product-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .product-price { color: var(--accent); font-weight: 800; font-size: 1rem; }
+  .product-tag { display:inline-block; font-size:0.7rem; background: var(--primary-light); color: var(--primary); padding: 2px 8px; border-radius: 999px; margin-top: 6px; }
+
+  .section-title { font-size: 1.1rem; font-weight: 800; margin: 28px 0 14px; color: var(--primary); }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 18px; max-width: 420px; width: 100%; overflow: hidden; max-height: 90vh; overflow-y: auto; }
+  .modal-thumb { height: 200px; display: flex; align-items: center; justify-content: center; font-size: 6rem; background: var(--primary-light); position: relative; }
+  .modal-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.9); border: none; font-size: 1.1rem; cursor: pointer; color: #1a202c; }
+  .modal-body { padding: 20px 22px 26px; }
+  .modal-name { font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; }
+  .modal-price { color: var(--accent); font-weight: 800; font-size: 1.3rem; margin-bottom: 12px; }
+  .modal-desc { font-size: 0.92rem; color: var(--text); margin-bottom: 8px; }
+  .modal-options { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
+  .modal-options b { color: var(--text); }
+  .buy-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; border-radius: 12px; background: #25D366; color: #fff; font-weight: 800; font-size: 1rem; text-decoration: none; border: none; cursor: pointer; }
+  .buy-btn:hover { background: #1ebe5d; }
+  .buy-note { text-align: center; font-size: 0.78rem; color: var(--text-muted); margin-top: 10px; }
+
+  footer { text-align: center; color: var(--text-muted); font-size: 0.82rem; margin-top: 40px; }
+  footer a { color: var(--text-muted); }
+</style>
+  <!-- Google AdSense: ໂຄ້ດຢືນຢັນເຈົ້າຂອງເວັບໄຊທ໌ -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6562706912274595"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="/"><span class="icon">🎤</span> Lao Karaoke</a>
+</nav>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>🛍️ ຮ້ານຄ້າອອນລາຍ</h1>
+    <p>ສາຍສາກ iPhone ແທ້ ແລະ ໝວກແຟຊັນ ລາຄາຖືກ — ສັ່ງງ່າຍຜ່ານ WhatsApp</p>
+    <p class="en" lang="en">
+      Online shop for genuine-quality iPhone charging cables and fashion caps. Tap any
+      product to see details, then order instantly via WhatsApp.
+    </p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-filter="all" onclick="filterProducts('all', this)">ທັງໝົດ</button>
+    <button class="tab-btn" data-filter="cable" onclick="filterProducts('cable', this)">🔌 ສາຍສາກ iPhone</button>
+    <button class="tab-btn" data-filter="hat" onclick="filterProducts('hat', this)">🧢 ໝວກ</button>
+  </div>
+
+  <div class="grid" id="product-grid"></div>
+</div>
+
+<!-- Product detail modal -->
+<div class="overlay" id="overlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-thumb">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <span id="modal-emoji">🔌</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-name" id="modal-name"></div>
+      <div class="modal-price" id="modal-price"></div>
+      <div class="modal-desc" id="modal-desc"></div>
+      <div class="modal-options" id="modal-options"></div>
+      <a class="buy-btn" id="modal-buy" href="#" target="_blank" rel="noopener">
+        💬 ສັ່ງຊື້ຜ່ານ WhatsApp
+      </a>
+      <p class="buy-note">ກົດແລ້ວຈະເປີດ WhatsApp ພ້ອມຂໍ້ຄວາມສັ່ງຊື້ໃຫ້ອັດຕະໂນມັດ</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>ສະຫງວນສິດ ພັດທະນາໂດຍ: ທ.ຈັນທະຈອນ ພິມມະສອນ</p>
+  <p>© 2025 Lao Karaoke Shop</p>
+  <p lang="en" style="font-size:0.78rem;margin-top:4px">
+    Online shop for iPhone cables and caps. Order via WhatsApp.
+  </p>
+  <p style="margin-top:6px">
+    <a href="/" style="text-decoration:underline">ໜ້າຫຼັກ</a>
+    &nbsp;·&nbsp;
+    <a href="/about.html" style="text-decoration:underline">ກ່ຽວກັບພວກເຮົາ</a>
+    &nbsp;·&nbsp;
+    <a href="/privacy.html" style="text-decoration:underline">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</a>
+  </p>
+</footer>
+
+<script>
+const WHATSAPP_NUMBER = '2029988148'; // +856 20 29988148
+
+const products = [
+  {
+    id: 'cable-lightning-1m',
+    category: 'cable',
+    emoji: '🔌',
+    name: 'ສາຍສາກ iPhone Lightning 1M',
+    price: '35,000 ກີບ',
+    desc: 'ສາຍສາກ Lightning ຄຸນນະພາບດີ ຍາວ 1 ແມັດ ຮອງຮັບ iPhone 5 ຫາ 14 (Lightning port), ສາກໄວ, ທົນທານ',
+    options: 'ສີ: ຂາວ / ດຳ &nbsp;•&nbsp; ຄວາມຍາວ: 1 ແມັດ'
+  },
+  {
+    id: 'cable-lightning-2m',
+    category: 'cable',
+    emoji: '🔌',
+    name: 'ສາຍສາກ iPhone Lightning 2M',
+    price: '50,000 ກີບ',
+    desc: 'ສາຍສາກ Lightning ລຸ້ນຍາວພິເສດ 2 ແມັດ ສະດວກໃຊ້ເທິງຕຽງ ຫຼືໃນລົດ, ຫຸ້ມສາຍໜາ ບໍ່ຂາດງ່າຍ',
+    options: 'ສີ: ຂາວ / ດຳ &nbsp;•&nbsp; ຄວາມຍາວ: 2 ແມັດ'
+  },
+  {
+    id: 'cable-typec',
+    category: 'cable',
+    emoji: '🔌',
+    name: 'ສາຍສາກ USB-C to Lightning',
+    price: '55,000 ກີບ',
+    desc: 'ຮອງຮັບການສາກໄວ (Fast Charging) ສຳລັບ iPhone ຮຸ່ນໃໝ່ ໃຊ້ຄູ່ກັບ adapter ໄຟ 20W',
+    options: 'ສີ: ຂາວ &nbsp;•&nbsp; ຄວາມຍາວ: 1 ແມັດ'
+  },
+  {
+    id: 'cable-3in1',
+    category: 'cable',
+    emoji: '🔌',
+    name: 'ສາຍສາກ 3-in-1 (Lightning/Type-C/Micro)',
+    price: '65,000 ກີບ',
+    desc: 'ສາຍສາກອະເນກປະສົງ ໃຊ້ໄດ້ກັບ iPhone, Android Type-C ແລະ Micro USB ໃນສາຍດຽວ ເໝາະສຳລັບເດີນທາງ',
+    options: 'ສີ: ດຳ &nbsp;•&nbsp; ຄວາມຍາວ: 1.2 ແມັດ'
+  },
+  {
+    id: 'hat-classic',
+    category: 'hat',
+    emoji: '🧢',
+    name: 'ໝວກແກັບ Classic',
+    price: '45,000 ກີບ',
+    desc: 'ໝວກແກັບແບບຄລາສສິກ ໃສ່ໄດ້ທຸກເພດທຸກໄວ ປັບຂະໜາດໄດ້ ດ້ານຫຼັງມີສາຍປັບ',
+    options: 'ສີ: ດຳ / ຂາວ / ຟ້າ / ແດງ &nbsp;•&nbsp; Free size'
+  },
+  {
+    id: 'hat-snapback',
+    category: 'hat',
+    emoji: '🧢',
+    name: 'ໝວກ Snapback ແຟຊັນ',
+    price: '55,000 ກີບ',
+    desc: 'ໝວກທັນສະໄໝ ດ້ານໜ້າແຂງ ຊົງສວຍ ເໝາະໃສ່ອອກແດດ ຫຼືອອກແຟຊັນປະຈຳວັນ',
+    options: 'ສີ: ດຳ / ຄາກີ / ຂາວ &nbsp;•&nbsp; Free size'
+  },
+  {
+    id: 'hat-bucket',
+    category: 'hat',
+    emoji: '👒',
+    name: 'ໝວກ Bucket Hat',
+    price: '50,000 ກີບ',
+    desc: 'ໝວກປີກຮອບ ແບບເກົາຫຼີ ກັນແດດໄດ້ຮອບດ້ານ ໃສ່ສະບາຍ ເໝາະກັບທຸກ style',
+    options: 'ສີ: ດຳ / ຄາກີ / ຟ້າອ່ອນ &nbsp;•&nbsp; Free size'
+  },
+  {
+    id: 'hat-kids',
+    category: 'hat',
+    emoji: '🧢',
+    name: 'ໝວກແກັບເດັກນ້ອຍ',
+    price: '35,000 ກີບ',
+    desc: 'ໝວກແກັບໄຊສ໌ນ້ອຍ ສຳລັບເດັກອາຍຸ 3-10 ປີ ນ້ຳໜັກເບົາ ໃສ່ສະບາຍ',
+    options: 'ສີ: ຫຼາຍສີ &nbsp;•&nbsp; ໄຊສ໌: S/M'
+  }
+];
+
+function renderProducts(filter) {
+  const grid = document.getElementById('product-grid');
+  grid.innerHTML = '';
+  products
+    .filter(p => filter === 'all' || p.category === filter)
+    .forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.onclick = () => openModal(p.id);
+      card.innerHTML = `
+        <div class="product-thumb">${p.emoji}</div>
+        <div class="product-body">
+          <div class="product-name">${p.name}</div>
+          <div class="product-price">${p.price}</div>
+          <span class="product-tag">${p.category === 'cable' ? 'ສາຍສາກ' : 'ໝວກ'}</span>
+        </div>`;
+      grid.appendChild(card);
+    });
+}
+
+function filterProducts(filter, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts(filter);
+}
+
+function openModal(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modal-emoji').textContent = p.emoji;
+  document.getElementById('modal-name').textContent = p.name;
+  document.getElementById('modal-price').textContent = p.price;
+  document.getElementById('modal-desc').textContent = p.desc;
+  document.getElementById('modal-options').innerHTML = p.options;
+
+  const message = `ສະບາຍດີ ຂ້ອຍຢາກສັ່ງຊື້: ${p.name} (${p.price}) ຈາກ Lao Karaoke Shop`;
+  document.getElementById('modal-buy').href =
+    `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target.id === 'overlay') closeModal();
+}
+
+renderProducts('all');
+</script>
+
+</body>
+</html>
