@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f766e">
+  <title>My Money - ບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="My Money ໜ້າຫຼັກ">
+        <span class="brand-icon">₭</span>
+        <span><strong>My Money</strong><small>ບັນທຶກເງິນຂອງຂ້ອຍ</small></span>
+      </a>
+      <div class="header-actions"><button id="importBtn" class="btn btn-outline btn-small" type="button">ນຳເຂົ້າ</button><button id="exportBtn" class="btn btn-outline btn-small" type="button">ສຳຮອງ</button></div>
+    </header>
+
+    <main>
+      <section class="balance-card">
+        <div class="balance-heading">
+          <span>ຍອດສຸດທິທັງໝົດ</span>
+          <span class="live-dot">● ຂໍ້ມູນໃນເຄື່ອງ</span>
+        </div>
+        <div id="totalBalance" class="balance-amount">₭ 0</div>
+        <div class="balance-details">
+          <div><span class="detail-icon income-icon">↙</span><span class="detail-label">ລາຍຮັບ</span><strong id="totalIncome">₭ 0</strong></div>
+          <div><span class="detail-icon expense-icon">↗</span><span class="detail-label">ລາຍຈ່າຍ</span><strong id="totalExpense">₭ 0</strong></div>
+        </div>
+      </section>
+
+      <section class="panel quick-entry">
+        <div class="section-heading">
+          <div><h2>ບັນທຶກດ່ວນ</h2><p>ເລືອກປະເພດ ແລ້ວກົດຈຳນວນເງິນ</p></div>
+        </div>
+        <div class="type-switch" role="group" aria-label="ປະເພດລາຍການ">
+          <button type="button" class="type-btn active expense-selected" data-type="expense" aria-pressed="true">− ລາຍຈ່າຍ</button>
+          <button type="button" class="type-btn" data-type="income" aria-pressed="false">＋ ລາຍຮັບ</button>
+        </div>
+        <div class="field-row">
+          <label for="categorySelect">ໝວດໝູ່</label>
+          <select id="categorySelect">
+            <option value="ອາຫານ">🍜 ອາຫານ</option>
+            <option value="ເດີນທາງ">🛵 ເດີນທາງ</option>
+            <option value="ກາເຟ/ເຄື່ອງດື່ມ">☕ ກາເຟ/ເຄື່ອງດື່ມ</option>
+            <option value="ຊື້ເຄື່ອງ">🛍️ ຊື້ເຄື່ອງ</option>
+            <option value="ຄ່າບ້ານ">🏠 ຄ່າບ້ານ</option>
+            <option value="ເງິນເດືອນ">💼 ເງິນເດືອນ</option>
+            <option value="ທຸລະກິດ">💰 ທຸລະກິດ</option>
+            <option value="ອື່ນໆ">📌 ອື່ນໆ</option>
+          </select>
+        </div>
+        <div class="amount-grid" id="amountGrid">
+          <button type="button" class="amount-btn" data-amount="10000"><span>₭</span> 10,000</button>
+          <button type="button" class="amount-btn" data-amount="27000"><span>₭</span> 27,000</button>
+          <button type="button" class="amount-btn" data-amount="49000"><span>₭</span> 49,000</button>
+          <button type="button" class="amount-btn" data-amount="89000"><span>₭</span> 89,000</button>
+        </div>
+        <div class="field-row">
+          <label for="noteInput">ບັນທຶກເພີ່ມ (ບໍ່ບັງຄັບ)</label>
+          <input id="noteInput" type="text" maxlength="100" placeholder="ຕົວຢ່າງ: ອາຫານທ່ຽງ">
+        </div>
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="panel report-panel">
+        <div class="section-heading">
+          <div><h2>ລາຍງານ</h2><p>ສະຫຼຸບຕາມຊ່ວງເວລາ</p></div>
+        </div>
+        <div class="report-tabs" role="tablist" aria-label="ຊ່ວງເວລາລາຍງານ">
+          <button class="report-tab active" data-period="day" type="button" role="tab" aria-selected="true">ມື້ນີ້</button>
+          <button class="report-tab" data-period="week" type="button" role="tab" aria-selected="false">ອາທິດນີ້</button>
+          <button class="report-tab" data-period="month" type="button" role="tab" aria-selected="false">ເດືອນນີ້</button>
+        </div>
+        <div class="report-date" id="reportRange"></div>
+        <div class="report-summary">
+          <div class="report-tile"><span>ລາຍຮັບ</span><strong id="periodIncome" class="positive">₭ 0</strong></div>
+          <div class="report-tile"><span>ລາຍຈ່າຍ</span><strong id="periodExpense" class="negative">₭ 0</strong></div>
+          <div class="report-tile full"><span>ຍອດສຸດທິໃນຊ່ວງນີ້</span><strong id="periodNet">₭ 0</strong></div>
+        </div>
+        <div class="chart-title">ລາຍຈ່າຍແຍກຕາມໝວດ</div>
+        <div id="categoryBreakdown" class="category-breakdown"><p class="empty-small">ຍັງບໍ່ມີຂໍ້ມູນ</p></div>
+      </section>
+
+      <section class="panel history-panel">
+        <div class="section-heading history-heading">
+          <div><h2>ປະຫວັດລາຍການ</h2><p id="historyCount">0 ລາຍການ</p></div>
+          <select id="historyFilter" class="filter-select" aria-label="ກັ່ນຕອງປະຫວັດ">
+            <option value="all">ທັງໝົດ</option>
+            <option value="expense">ລາຍຈ່າຍ</option>
+            <option value="income">ລາຍຮັບ</option>
+          </select>
+        </div>
+        <div id="transactionList" class="transaction-list"></div>
+        <button id="clearAllBtn" class="text-danger-btn" type="button">ລຶບຂໍ້ມູນທັງໝົດ</button>
+      </section>
+    </main>
+
+    <footer><span>My Money</span> · ຂໍ້ມູນບັນທຶກຢູ່ໃນ Browser ຂອງທ່ານ</footer>
+  </div>
+
+  <dialog id="editDialog" class="edit-dialog">
+    <form id="editForm" method="dialog">
+      <div class="dialog-heading"><h2>ແກ້ໄຂລາຍການ</h2><button id="closeDialogBtn" class="icon-btn" type="button" aria-label="ປິດ">✕</button></div>
+      <input type="hidden" id="editId">
+      <div class="field-row"><label for="editType">ປະເພດ</label><select id="editType"><option value="expense">ລາຍຈ່າຍ</option><option value="income">ລາຍຮັບ</option></select></div>
+      <div class="field-row"><label for="editAmount">ຈຳນວນເງິນ (ກີບ)</label><input id="editAmount" type="number" min="1" step="1" required></div>
+      <div class="field-row"><label for="editCategory">ໝວດໝູ່</label><input id="editCategory" type="text" maxlength="40" required></div>
+      <div class="field-row"><label for="editNote">ລາຍລະອຽດ</label><input id="editNote" type="text" maxlength="100"></div>
+      <div class="field-row"><label for="editDate">ວັນທີ ແລະເວລາ</label><input id="editDate" type="datetime-local" required></div>
+      <div class="dialog-actions"><button id="cancelEditBtn" class="btn btn-outline" type="button">ຍົກເລີກ</button><button class="btn btn-primary" type="submit">ບັນທຶກການແກ້ໄຂ</button></div>
+    </form>
+  </dialog>
+
+  <input id="importInput" type="file" accept="application/json,.json" hidden>
+  <script src="app.js"></script>
+</body>
+</html>
